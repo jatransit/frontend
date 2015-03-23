@@ -1,0 +1,21 @@
+<resources>
+
+
+    <style name="AppBaseTheme" parent="Theme.AppCompat.Light">
+    <item name="windowActionBar">false</item>
+    <item name="colorPrimary">#ffff9431</item>
+    <item name="colorPrimaryDark">#ffD56600</item>
+    </style>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+
+
+
+    </style>
+
+    <style name="ActionBar" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:displayOptions">homeAsUp</item>
+        <item name="android:background">#007bb6</item>
+    </style>
+
+</resources>
