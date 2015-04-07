@@ -3,12 +3,9 @@ package capstoneproject.jatransit.FragmentHandler;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.ListFragment;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.android.volley.Cache;
@@ -120,9 +117,11 @@ public class Nearby extends Fragment{//ListFragment {
                 JSONObject feedObj = (JSONObject) feedArray.get(i);
                 FeedItem item = new FeedItem();
                 item.setRoute(feedObj.getString("route"));
+
                 item.setOrigin(feedObj.getString("origin"));
                 item.setVia(feedObj.getString("via"));
                 item.setDestination(feedObj.getString("destination"));
+               // item.setRouteType(feedObj.getString("route_type"));
                 item.setTimeStamp(feedObj.getString("timeStamp"));
 
                 feedItems.add(0,item);
@@ -134,6 +133,8 @@ public class Nearby extends Fragment{//ListFragment {
             e.printStackTrace();
         }
     }
+
+
 
  /*   @Override
     public void onActivityCreated(Bundle savedInstanceState) {

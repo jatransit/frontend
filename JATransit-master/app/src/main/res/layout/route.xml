@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingLeft="@dimen/feed_item_orig_to_des"
-                android:id="@+id/left">
+                >
 
                 <TextView
                     android:id="@+id/route"
@@ -50,9 +50,27 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/feed_item_route"
                     />
+                <TextView
+                    android:id="@+id/org"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="10dp"
+                    />
 
                 <TextView
-                    android:id="@+id/org_to_des"
+                    android:id="@+id/via"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="10dp"
+                    />
+                <TextView
+                    android:id="@+id/des"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="10dp"
+                    />
+                <TextView
+                    android:id="@+id/routetype"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:textSize="10dp"

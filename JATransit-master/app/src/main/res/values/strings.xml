@@ -14,4 +14,24 @@
     <!-- Search  -->
     <string name="search_hint">Search color..</string>
 
+    <string name="body">This android application displays nearby bus timing information and bus routes that JUTC operates.
+                        This application utilizes the GPS built in to your smart phone to pinpoint your
+                        location. The application will then tie you to the nearest bus stop and display a list of the buses arriving
+                        at that bus stop in the order of arrival time.
+    </string>
+    <string-array name="questions">
+        <item>What does the Acronym JUTC mean?</item>
+        <item>What is the JUTC SMART CARD?</item>
+        <item>What is the size and “make up” of the JUTC fleet?</item>
+    </string-array>
+
+    <string-array name="answers">
+        <item>Jamaica Urban Transit Company</item>
+        <item>This is a “cashless system” of bus fare payment, which JUTC commuters can use
+              for travel within the Kingston Metropolitan Transportation Region (KMTR). The
+              card is reusable and rechargeable and should not be thrown away – similar to a credit card.</item>
+        <item>The fleet size is now approximately 460 buses and including the artic, bi-artic, buses for
+            the handicapped and luxury coaches. The most common make in the fleet is Volvo.</item>
+    </string-array>
+
 </resources>

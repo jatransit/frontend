@@ -1,7 +1,10 @@
 package capstoneproject.jatransit.FragmentHandler;
 
+import android.content.Context;
 import android.content.res.TypedArray;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -41,9 +44,17 @@ public class MapsFragment extends Fragment {
 
         mapView.onCreate(savedInstanceState);
         mMap = mapView.getMap();
-        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        //mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.setMyLocationEnabled(true);
-        getLocation(mMap);
+
+        LocationManager lm = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
+        LocationListener ll = new MyLocationListener();
+        if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
+        } else {
+            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, ll);
+        }
+        Toast.makeText(getActivity(),"oncreate",Toast.LENGTH_LONG).show();
 
         //setUpMapIfNeeded();
         // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
@@ -61,9 +72,41 @@ public class MapsFragment extends Fragment {
 
     }
 
+    private class MyLocationListener implements LocationListener{
+
+
+        @Override
+        public void onLocationChanged(Location location) {
+
+            Toast.makeText(getActivity(),"check",Toast.LENGTH_LONG).show();
+
+            if(location!=null){
+                Toast.makeText(getActivity(),location.getLatitude()+""+location.getLongitude(),Toast.LENGTH_LONG).show();
+            }else{
+                Toast.makeText(getActivity(),"no location found",Toast.LENGTH_LONG).show();
+            }
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    }
+
     public void getLocation(GoogleMap map){
 
         Location myLocation =  map.getMyLocation();
+        Toast.makeText(getActivity(), "Unable to fetch the current location", Toast.LENGTH_SHORT).show();
         if(myLocation!=null)
         {
             double dLatitude = myLocation.getLatitude();

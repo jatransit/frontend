@@ -9,23 +9,32 @@ public class FeedItem {
     private String origin;
     private String via;
     private String destination;
+    private String routetype;
 
 
 
     private String timeStamp;
-    public FeedItem(String route, String origin, String via,String destination,String timeStamp){
+    public FeedItem(String route, String origin, String via,String destination,String routetype,String timeStamp){
 
         super();
         this.route = route;
         this.origin = origin;
         this.via = via;
         this.destination = destination;
+        this.routetype=routetype;
         this.timeStamp = timeStamp;
 
     }
     public FeedItem(){
 
     }
+    public void setRouteType(String routetype){
+        this.routetype=routetype;
+    }
+    public String getRoutetype(){
+        return routetype;
+    }
+
     public String getRoute() {
         return route;
     }
