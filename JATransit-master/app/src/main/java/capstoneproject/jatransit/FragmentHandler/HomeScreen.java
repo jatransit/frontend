@@ -14,7 +14,6 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import capstoneproject.jatransit.ActivityHandler.SearchResultsActivity;
 import capstoneproject.jatransit.Adapter.ImageAdapter;
 import capstoneproject.jatransit.R;
 
@@ -153,9 +152,7 @@ public class HomeScreen extends Fragment {
                                 text.setText(map.ARG_STRING);
                                 break;
                             case 4:
-                                //Set up widget
 
-                                SearchResultsActivity search = new  SearchResultsActivity();
                                 Toast.makeText(getActivity(), "search",
                                         Toast.LENGTH_SHORT).show();
                                 break;

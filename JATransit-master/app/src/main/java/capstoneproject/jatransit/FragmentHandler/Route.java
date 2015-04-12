@@ -3,6 +3,7 @@ package capstoneproject.jatransit.FragmentHandler;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import java.util.List;
 import capstoneproject.jatransit.Adapter.FeedListAdapter;
 import capstoneproject.jatransit.R;
 import capstoneproject.jatransit.app.AppController;
+import capstoneproject.jatransit.data.DBHelper;
 import capstoneproject.jatransit.data.FeedItem;
 
 /**
@@ -35,6 +37,7 @@ public class Route extends Fragment {
     public static final String ARG_STRING = "Route";
 
 
+
     private Cache cache;
     private Cache.Entry entry = null;
 
@@ -43,10 +46,12 @@ public class Route extends Fragment {
     public View rootView;
     private ListView listView;
     private FeedListAdapter listAdapter;
-    public FeedListAdapter oldlistAdapter = null;
+
     private List<FeedItem> feedItems;
     private FragmentActivity faActivity;
-    private String status;
+
+
+    public DBHelper routedb;
 
 
     private String URL_FEED ="http://jatransit.appspot.com/routes";
@@ -55,13 +60,17 @@ public class Route extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        faActivity  = (FragmentActivity)    super.getActivity();
+        routedb = new DBHelper(getActivity());
+       faActivity  = (FragmentActivity)    super.getActivity();
         rootView = inflater.inflate(R.layout.listview, container,false);
         listView = (ListView) rootView.findViewById(R.id.listView);
-        feedItems = new ArrayList<FeedItem>();
 
-        listAdapter = new FeedListAdapter(faActivity , feedItems);
-        listView.setAdapter(listAdapter);
+       feedItems = new ArrayList<FeedItem>();
+
+       listAdapter = new FeedListAdapter(faActivity ,feedItems);
+
+       listView.setAdapter(listAdapter);
+
 
         rootView.setVisibility(android.view.View.VISIBLE);
 
@@ -72,6 +81,8 @@ public class Route extends Fragment {
         }catch (NullPointerException e){
             e.printStackTrace();
         }
+
+
 
         return rootView;
 
@@ -114,22 +125,47 @@ public class Route extends Fragment {
         try {
             JSONArray feedArray = response.getJSONArray("routes");
 
+            routedb = new DBHelper(getActivity());
+
             for (int i = 0; i < feedArray.length(); i++) {
                 JSONObject feedObj = (JSONObject) feedArray.get(i);
                 FeedItem item = new FeedItem();
 
-                item.setOrigin(feedObj.getString("origin"));
+               /* item.setOrigin(feedObj.getString("origin"));
                 item.setDestination(feedObj.getString("destination"));
                 item.setRoute(feedObj.getString("route"));
                 item.setVia(feedObj.getString("via"));
 
                 item.setRouteType(feedObj.getString("route_type"));
 
-                feedItems.add(0, item);
+                    */
+
+                //Insert in the sqlite database what is on the server
+               routedb.insertRoute(feedObj.getString("route"), feedObj.getString("origin"),feedObj.getString("destination"),feedObj.getString("via"), feedObj.getString("route_type"));
 
 
+
+
+               // feedItems.add(0, item);
+
+
+
+
+
+
+                }
+
+
+            List<FeedItem> temp = routedb.getAllRoutes();
+            for(int i = 0;i< temp.size();i++) {
+                feedItems.add(0, temp.get(i));
             }
-            listAdapter.notifyDataSetChanged();
+
+            Log.d("Tag",""+ feedItems.size());
+
+
+
+           listAdapter.notifyDataSetChanged();
         } catch (JSONException e) {
             e.printStackTrace();
         }

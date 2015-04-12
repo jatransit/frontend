@@ -1,9 +1,7 @@
 package capstoneproject.jatransit.ActivityHandler;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.SearchView;
@@ -25,20 +23,22 @@ public class SearchResultsActivity  extends Activity implements SearchView.OnQue
         setContentView(R.layout.activity_search_results);
 
         // get the action bar
-        ActionBar actionBar = getActionBar();
+        //ActionBar actionBar = getActionBar();
 
         // Enabling Back navigation on Action Bar icon
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        //actionBar.setDisplayHomeAsUpEnabled(true);
 
-        txtQuery = (TextView) findViewById(R.id.txtQuery);
+       // txtQuery = (TextView) findViewById(R.id.txtQuery);
 
-        searchView = (SearchView) findViewById(R.id.action_search);
 
-        SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
-        searchView.setQueryHint("Enter query here");
-        searchView.setOnQueryTextListener(this);
+        // Get the intent, verify the action and get the query
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
 
-        handleIntent(getIntent());
+        }
+
+        //handleIntent(getIntent());
 
 
     }

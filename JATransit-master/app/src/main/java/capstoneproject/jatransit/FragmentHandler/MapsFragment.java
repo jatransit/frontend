@@ -14,12 +14,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 import capstoneproject.jatransit.R;
 
@@ -30,6 +35,8 @@ public class MapsFragment extends Fragment {
     public static final String ARG_STRING= "Map";
     View rootView;
     MapView mapView;
+
+    String [] tempCoordinates = {"18.012061/-76.797698","18.011872/-76.797670","18.011908/-76.797488","18.011949/-76.797274","18.012005/-76.796909","18.020959/-76.770758","18.020296/-76.768194","18.019689/-76.765603","18.019413/-76.764063","18.019066/-76.762303","18.018602/-76.759997","18.017878/-76.756365","18.017495/-76.754225","18.017046/-76.751666","18.016663/-76.749906","18.016230/-76.747487","18.016097/-76.746618","18.015919/-76.745695","18.015633/-76.744118","18.015409/-76.743045","18.015743/-76.742391","18.016031/-76.741809","17.994998/-76.788781","18.015682/-76.741744","18.015307/-76.741916","18.015253/-76.742117"};
 
 
     public MapsFragment() {
@@ -47,61 +54,64 @@ public class MapsFragment extends Fragment {
         //mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.setMyLocationEnabled(true);
 
-        LocationManager lm = (LocationManager)getActivity().getSystemService(Context.LOCATION_SERVICE);
-        LocationListener ll = new MyLocationListener();
-        if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
-        } else {
-            lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, ll);
-        }
-        Toast.makeText(getActivity(),"oncreate",Toast.LENGTH_LONG).show();
+        // Acquire a reference to the system Location Manager
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-        //setUpMapIfNeeded();
-        // Needs to call MapsInitializer before doing any CameraUpdateFactory calls
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                makeUseOfNewLocation(location);
+            }
 
-//        try {
-//            MapsInitializer.initialize(this.getActivity());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        // Updates the location and zoom of the MapView
-//        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(18.005791, -76.746733), 15);
-//        mMap.animateCamera(cameraUpdate);
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+
+// Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
+
         return rootView;
 
     }
 
-    private class MyLocationListener implements LocationListener{
+    private void makeUseOfNewLocation(Location location) {
+
+        Toast.makeText(getActivity(),location.getLatitude()+" "+location.getLongitude(), Toast.LENGTH_SHORT).show();
+
+        ArrayList<Double> temp = new ArrayList<Double>();
+        for (int i =0; i<tempCoordinates.length;i++) {
+
+            double c = Math.sqrt(Math.pow(Math.abs(Double.parseDouble(tempCoordinates[i].split("/")[0])) - Math.abs(location.getLatitude()), 2) + Math.pow(Math.abs(Double.parseDouble(tempCoordinates[i].split("/")[1])) - Math.abs(location.getLongitude()), 2));
+
+            temp.add(c);
+        }
+        double d = Collections.min(temp);
+        int e = temp.indexOf(d);
+            Toast.makeText(getActivity(),tempCoordinates[e].split("/")[0]+" "+tempCoordinates[e].split("/")[1], Toast.LENGTH_SHORT).show();
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(Double.parseDouble(tempCoordinates[e].split("/")[0]), Double.parseDouble(tempCoordinates[e].split("/")[1])))
+                    .title("Bus Stop"));
+
+        LatLng sourcePosition = new  LatLng(location.getLatitude(),location.getLongitude());
+        LatLng destPosition = new LatLng(Double.parseDouble(tempCoordinates[e].split("/")[0]),Double.parseDouble(tempCoordinates[e].split("/")[1]));
 
 
-        @Override
-        public void onLocationChanged(Location location) {
-
-            Toast.makeText(getActivity(),"check",Toast.LENGTH_LONG).show();
-
-            if(location!=null){
-                Toast.makeText(getActivity(),location.getLatitude()+""+location.getLongitude(),Toast.LENGTH_LONG).show();
-            }else{
-                Toast.makeText(getActivity(),"no location found",Toast.LENGTH_LONG).show();
-            }
+        try {
+            MapsInitializer.initialize(this.getActivity());
+        } catch (Exception error) {
+            error.printStackTrace();
         }
 
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
+        // Updates the location and zoom of the MapView
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15);
+        mMap.animateCamera(cameraUpdate);
     }
+
 
     public void getLocation(GoogleMap map){
 

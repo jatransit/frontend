@@ -12,10 +12,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.List;
 
 import capstoneproject.jatransit.FragmentHandler.HomeScreen;
 import capstoneproject.jatransit.FragmentHandler.MapsFragment;
+import capstoneproject.jatransit.data.DBHelper;
+import capstoneproject.jatransit.data.FeedItem;
 
 /**
  * Created by CaliphCole on 02/17/2015.
@@ -70,6 +74,30 @@ public class MainActivity extends ActionBarActivity{
                 .getActionView();
         searchView.setSearchableInfo(searchManager
                 .getSearchableInfo(getComponentName()));
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+
+
+
+                DBHelper db = new DBHelper(getApplication());
+
+                List<FeedItem> res = db.getDataByRoute(s);
+
+                Toast.makeText(getApplication(), res.get(0).getRoute()+" "+ res.get(0).getOrigin(), Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+
+
+        });
+
 
         return super.onCreateOptionsMenu(menu);
     }
