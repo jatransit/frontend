@@ -111,8 +111,6 @@ public class HomeScreen extends Fragment {
                                     ft1.addToBackStack(null);
                                     ft1.commit();
 
-
-
                                 text.setText(route.ARG_STRING);
                                 break;
                             case 2:

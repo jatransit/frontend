@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -12,12 +13,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
 import capstoneproject.jatransit.FragmentHandler.HomeScreen;
 import capstoneproject.jatransit.FragmentHandler.MapsFragment;
+import capstoneproject.jatransit.FragmentHandler.Searchfragment;
 import capstoneproject.jatransit.data.DBHelper;
 import capstoneproject.jatransit.data.FeedItem;
 
@@ -34,7 +35,8 @@ public class MainActivity extends ActionBarActivity{
 
     private HomeScreen home;
     public TextView text;
-
+    public DBHelper routedb;
+    public   List<FeedItem> res;
 
 
     @Override
@@ -75,18 +77,41 @@ public class MainActivity extends ActionBarActivity{
         searchView.setSearchableInfo(searchManager
                 .getSearchableInfo(getComponentName()));
 
+        searchView.setOnCloseListener(new SearchView.OnCloseListener(){
+
+            @Override
+            public boolean onClose() {
+
+
+                return false;
+            }
+        });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
             public boolean onQueryTextSubmit(String s) {
 
-
-
                 DBHelper db = new DBHelper(getApplication());
 
-                List<FeedItem> res = db.getDataByRoute(s);
+                Bundle bundle = new Bundle();
+                bundle.putString("query", s);
 
-                Toast.makeText(getApplication(), res.get(0).getRoute()+" "+ res.get(0).getOrigin(), Toast.LENGTH_SHORT).show();
+
+                Searchfragment searchfragment = Searchfragment.newInstance(1,"search");
+                searchfragment.setArguments(bundle);
+
+                FragmentManager fm5 = getSupportFragmentManager();
+                FragmentTransaction ft5 = fm5.beginTransaction();
+
+
+                if (searchfragment.isAdded()) {
+                    ft5.show(searchfragment);
+                } else {
+                    ft5.replace(R.id.container, searchfragment, "");
+                }
+                ft5.addToBackStack(null);
+                ft5.commit();
+
                 return false;
             }
 

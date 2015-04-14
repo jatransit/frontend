@@ -3,9 +3,12 @@ package capstoneproject.jatransit.FragmentHandler;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.android.volley.Cache;
@@ -30,7 +33,7 @@ import capstoneproject.jatransit.data.FeedItem;
 /**
  * Created by Caliph Cole on 03/05/2015.
  */
-public class Nearby extends Fragment{//ListFragment {
+public class Nearby extends Fragment implements AdapterView.OnItemClickListener {//ListFragment {
 
     public static final String ARG_STRING = "Nearby";
 
@@ -66,6 +69,8 @@ public class Nearby extends Fragment{//ListFragment {
 
         listAdapter = new FeedListAdapter(faActivity , feedItems);
         listView.setAdapter(listAdapter);
+
+        listView.setOnItemClickListener(this);
 
         rootView.setVisibility(android.view.View.VISIBLE);
 
@@ -156,5 +161,25 @@ public class Nearby extends Fragment{//ListFragment {
         args.putInt("homescreen", someInt);
         nfragment.setArguments(args);
         return nfragment;
+    }
+
+
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        MapsFragment map = MapsFragment.newInstance(1,MapsFragment.ARG_STRING);
+        FragmentManager fm3 = getActivity().getSupportFragmentManager();
+        FragmentTransaction ft3 = fm3.beginTransaction();
+
+
+        if (map.isAdded()) {
+            ft3.show(map);
+        } else {
+            ft3.replace(R.id.container, map, map.ARG_STRING);
+        }
+        ft3.addToBackStack(null);
+        ft3.commit();
+
     }
 }

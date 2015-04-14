@@ -57,11 +57,11 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(ROUTE_COLUMN_ROUTE, route);
-        contentValues.put(ROUTE_COLUMN_ORIGIN, origin);
-        contentValues.put(ROUTE_COLUMN_DESTINATION, destination);
-        contentValues.put(ROUTE_COLUMN_VIA, via);
-        contentValues.put(ROUTE_COLUMN_ROUTETYPE, route_type);
+        contentValues.put(ROUTE_COLUMN_ROUTE, "Route Number: " + route);
+        contentValues.put(ROUTE_COLUMN_ORIGIN, "Origin: " + origin);
+        contentValues.put(ROUTE_COLUMN_DESTINATION, "Destination: " + destination);
+        contentValues.put(ROUTE_COLUMN_VIA,"Via: " + via);
+        contentValues.put(ROUTE_COLUMN_ROUTETYPE,"Route Type: " + route_type);
 
         db.insert(ROUTES_TABLE_NAME, null, contentValues);
         db.close();
@@ -156,6 +156,51 @@ public class DBHelper extends SQLiteOpenHelper {
         db.update("routes", contentValues, "id = ? ", new String[] { Integer.toString(id) } );
 
         return true;
+    }
+
+    public List<FeedItem> getAllRoutesByQuery(String s ){
+        List<FeedItem>  routeList = new ArrayList<FeedItem>();
+
+        String org = "";
+        String des = "";
+        try{
+            org = s.split(" to ")[0];
+            des = s.split(" to ")[1];
+
+        }catch (Exception e){
+
+            e.printStackTrace();
+        }
+
+
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + ROUTES_TABLE_NAME +" WHERE (origin LIKE '%"+ org + "%' AND destination LIKE '%" + des+"%') OR route LIKE '%" +s +"%'" ;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+
+                FeedItem item = new FeedItem();
+                item.setOrigin(cursor.getString(2));
+                // Log.d("origin",""+cursor.getString(2));
+                item.setDestination(cursor.getString(3));
+                //Log.d("des",""+cursor.getString(3));
+                item.setRoute(cursor.getString(1));
+                //Log.d("route",""+cursor.getString(1));
+                item.setVia(cursor.getString(4));
+                // Log.d("via",""+cursor.getString(4));
+                item.setRouteType(cursor.getString(5));
+                // Log.d("type",""+cursor.getString(5));
+
+                // Adding contact to list
+                routeList.add(item);
+            } while (cursor.moveToNext());
+        }
+
+        // return contact list
+        return routeList;
     }
 
 

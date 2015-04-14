@@ -80,26 +80,36 @@ public class MapsFragment extends Fragment {
     }
 
     private void makeUseOfNewLocation(Location location) {
+        try {
 
-        Toast.makeText(getActivity(),location.getLatitude()+" "+location.getLongitude(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), location.getLatitude() + " " + location.getLongitude(), Toast.LENGTH_SHORT).show();
 
-        ArrayList<Double> temp = new ArrayList<Double>();
-        for (int i =0; i<tempCoordinates.length;i++) {
+            ArrayList<Double> temp = new ArrayList<Double>();
+            for (int i = 0; i < tempCoordinates.length; i++) {
 
-            double c = Math.sqrt(Math.pow(Math.abs(Double.parseDouble(tempCoordinates[i].split("/")[0])) - Math.abs(location.getLatitude()), 2) + Math.pow(Math.abs(Double.parseDouble(tempCoordinates[i].split("/")[1])) - Math.abs(location.getLongitude()), 2));
+               // double c = Math.sqrt(Math.pow(Math.abs(Double.parseDouble(tempCoordinates[i].split("/")[0])) - Math.abs(location.getLatitude()), 2) + Math.pow(Math.abs(Double.parseDouble(tempCoordinates[i].split("/")[1])) - Math.abs(location.getLongitude()), 2));
+                Location busStopscord = new Location("");
+                busStopscord.setLatitude(Double.parseDouble(tempCoordinates[i].split("/")[0]));
+                busStopscord.setLongitude(Double.parseDouble(tempCoordinates[i].split("/")[1]));
 
-            temp.add(c);
-        }
-        double d = Collections.min(temp);
-        int e = temp.indexOf(d);
-            Toast.makeText(getActivity(),tempCoordinates[e].split("/")[0]+" "+tempCoordinates[e].split("/")[1], Toast.LENGTH_SHORT).show();
+                 double  c= location.distanceTo(busStopscord);
+                temp.add(c);
+                Log.d("distance",""+c);
+
+
+            }
+            double d = Collections.min(temp);
+            int e = temp.indexOf(d);
+            Toast.makeText(getActivity(), tempCoordinates[e].split("/")[0] + " " + tempCoordinates[e].split("/")[1], Toast.LENGTH_SHORT).show();
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(Double.parseDouble(tempCoordinates[e].split("/")[0]), Double.parseDouble(tempCoordinates[e].split("/")[1])))
                     .title("Bus Stop"));
 
-        LatLng sourcePosition = new  LatLng(location.getLatitude(),location.getLongitude());
-        LatLng destPosition = new LatLng(Double.parseDouble(tempCoordinates[e].split("/")[0]),Double.parseDouble(tempCoordinates[e].split("/")[1]));
-
+            LatLng sourcePosition = new LatLng(location.getLatitude(), location.getLongitude());
+            LatLng destPosition = new LatLng(Double.parseDouble(tempCoordinates[e].split("/")[0]), Double.parseDouble(tempCoordinates[e].split("/")[1]));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         try {
             MapsInitializer.initialize(this.getActivity());
@@ -231,6 +241,7 @@ public class MapsFragment extends Fragment {
         mfragment.setArguments(args);
         return mfragment;
     }
+
 
 
 

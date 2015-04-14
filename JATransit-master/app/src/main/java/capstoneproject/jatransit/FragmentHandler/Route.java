@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.Cache;
 import com.android.volley.Request;
@@ -106,6 +107,22 @@ public class Route extends Fragment {
             @Override
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.d(TAG, "Error: " + error.getMessage());
+
+
+                    if(routedb.numberOfRows()>0) {
+                        List<FeedItem> temp = routedb.getAllRoutes();
+                        for (int i = 0; i < temp.size(); i++) {
+                            feedItems.add(0, temp.get(i));
+                        }
+
+                        Log.d("Tag", "" + feedItems.size());
+
+
+                        listAdapter.notifyDataSetChanged();
+                    }else{
+
+                        Toast.makeText(getActivity(),"There are no routes locally stored", Toast.LENGTH_LONG).show();
+                    }
             }
         });
 
@@ -141,7 +158,12 @@ public class Route extends Fragment {
                     */
 
                 //Insert in the sqlite database what is on the server
-               routedb.insertRoute(feedObj.getString("route"), feedObj.getString("origin"),feedObj.getString("destination"),feedObj.getString("via"), feedObj.getString("route_type"));
+
+                if(feedArray.length()> routedb.numberOfRows()){
+
+                    routedb.insertRoute(feedObj.getString("route"), feedObj.getString("origin"),feedObj.getString("destination"),feedObj.getString("via"), feedObj.getString("route_type"));
+
+                }
 
 
 
