@@ -1,13 +1,19 @@
 package capstoneproject.jatransit.FragmentHandler;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.android.volley.Cache;
@@ -61,6 +67,7 @@ public class Route extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        setHasOptionsMenu(true);
         routedb = new DBHelper(getActivity());
        faActivity  = (FragmentActivity)    super.getActivity();
         rootView = inflater.inflate(R.layout.listview, container,false);
@@ -89,6 +96,10 @@ public class Route extends Fragment {
 
     }
 
+    public FeedListAdapter getListAdapter(){
+
+        return listAdapter;
+    }
 
     public void update(){
 
@@ -213,6 +224,66 @@ public class Route extends Fragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         // do something with the data
     }*/
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main_menu, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+
+        MenuItem item = menu.findItem(R.id.action_search);
+        item.setVisible(true);
+
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
+                .getActionView();
+        searchView.setSearchableInfo(searchManager
+                .getSearchableInfo(getActivity().getComponentName()));
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener(){
+
+            @Override
+            public boolean onClose() {
+
+
+                return false;
+            }
+        });
+        searchView.setOnCloseListener(new SearchView.OnCloseListener(){
+
+            @Override
+            public boolean onClose() {
+                return listAdapter.getOriginalfeedItems();
+            }
+        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+
+
+
+
+                return true;
+
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                if(listAdapter.getOriginalListCount()>0){
+                    listAdapter.getFilter().filter(newText);
+                }
+
+               return true;
+            }
+
+
+        });
+
+    }
+
 
     public static Route newInstance(int someInt, String s){
 

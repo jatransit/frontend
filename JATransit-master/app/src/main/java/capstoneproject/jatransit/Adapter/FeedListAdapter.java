@@ -11,24 +11,32 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import capstoneproject.jatransit.FragmentHandler.Route;
 import capstoneproject.jatransit.R;
 import capstoneproject.jatransit.data.FeedItem;
 
-public class FeedListAdapter extends BaseAdapter{
+public class FeedListAdapter extends BaseAdapter implements Filterable{
 
     private Activity activity;
     private LayoutInflater inflater;
     private List<FeedItem> feedItems;
     private Route routeFragment;
+    private RouteFilter filter;
+    private List<FeedItem> originalfeedItems;
 
     public FeedListAdapter(Activity activity, List<FeedItem> feedItems) {
         this.activity = activity;
         this.feedItems = feedItems;
+        this.originalfeedItems = feedItems;
+
+       getFilter();
     }
 
     @Override
@@ -83,6 +91,66 @@ public class FeedListAdapter extends BaseAdapter{
         }
 
         return convertView;
+    }
+
+    @Override
+    public Filter getFilter() {
+
+        if(filter == null){
+
+            filter = new RouteFilter();
+        }
+
+        return filter;
+    }
+
+    public boolean getOriginalfeedItems(){
+
+        feedItems = originalfeedItems;
+        notifyDataSetChanged();
+        return true;
+    }
+
+    public int getOriginalListCount() {
+        return originalfeedItems.size();
+    }
+
+    private class RouteFilter extends Filter{
+
+
+        @Override
+        protected FilterResults performFiltering (CharSequence constraint){
+            constraint = constraint. toString().toLowerCase();
+            FilterResults results = new FilterResults();
+            List<FeedItem> filteredItems = new ArrayList<FeedItem>();
+            if(constraint != null && constraint.toString().length() > 0) {
+
+                if (originalfeedItems != null && originalfeedItems.size() > 0) {
+
+                    for (FeedItem a : originalfeedItems) {
+                        if (a.getRoute().contains(constraint.toString()) ||a.getOrigin().contains(constraint.toString())
+                        || a.getDestination().contains(constraint.toString())||a.getVia().contains(constraint.toString())) {
+                            filteredItems.add(a);
+                        }
+                    }
+                    results.values = filteredItems;
+                }
+
+            }
+            return results;
+         }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+
+            try {
+                feedItems = (List<FeedItem>) results.values;
+                notifyDataSetChanged();
+            }catch (Exception e){
+                feedItems = originalfeedItems;
+                notifyDataSetChanged();
+            }
+        }
     }
 
 }
