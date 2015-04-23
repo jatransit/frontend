@@ -22,8 +22,8 @@ public class ImageAdapter extends BaseAdapter {
 
 
     // references to our images
-    private Integer[] mThumbIds1 = {R.drawable.nearby,R.drawable.route,R.drawable.trip,R.drawable.map,R.drawable.search,R.drawable.faq,R.drawable.terms,R.drawable.payment} ;//resource link
-    private String[] mThumbtext = {"Nearby","Routes","Trip","Map","Search","FAQ","About","Payment"};
+    private Integer[] mThumbIds1 = {R.drawable.nearby,R.drawable.route,R.drawable.trip,R.drawable.map,R.drawable.search,R.drawable.faq,R.drawable.terms} ;//resource link
+    private String[] mThumbtext = {"Nearby","Routes","Trip","Map","Search","FAQ","About"};
 
 
     public ImageAdapter(Context c) {

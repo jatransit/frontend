@@ -158,6 +158,38 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
+    public List<FeedItem> tripPlannerQuery(String org,String des) {
+
+        // first query for only one bus
+        String selectQuery = "SELECT  * FROM " + ROUTES_TABLE_NAME +" WHERE origin LIKE '%"+ org + "%' AND destination LIKE '%" + des+"%'" ;
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // if one bus doesnt satisfy the query then do another query
+        if(cursor.moveToFirst()== false){
+
+            // get data from table separately
+          String selectQueryorg1 = "SELECT  * FROM " + ROUTES_TABLE_NAME +" WHERE origin LIKE '%"+ org + "%'" ;
+          String selectQuerydes1 = "SELECT  * FROM " + ROUTES_TABLE_NAME +" WHERE destination LIKE '%"+ des + "%'" ;
+
+            SQLiteDatabase dborg1 = this.getWritableDatabase();
+            Cursor cursorOrg1 = dborg1.rawQuery(selectQueryorg1, null);
+            SQLiteDatabase dbdes1 = this.getWritableDatabase();
+            Cursor cursorDes1 = dbdes1.rawQuery(selectQuerydes1, null);
+            if(cursorOrg1.moveToFirst() &&cursorDes1.moveToFirst()) {
+                do {
+                    if(cursorOrg1.getString(3) == cursorDes1.getString(2))
+                    String selectQuery1 = "SELECT  * FROM " + ROUTES_TABLE_NAME + " WHERE origin LIKE '%" + org + "%'";
+
+                } while (cursorOrg1.moveToNext()&& cursorOrg1.moveToNext() );
+            }else{
+
+            }
+        }
+
+        return null;
+    }
     public List<FeedItem> getAllRoutesByQuery(String s ){
         List<FeedItem>  routeList = new ArrayList<FeedItem>();
 
@@ -253,4 +285,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
         return hasTables;
     }
+
+
 }

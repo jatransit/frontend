@@ -112,10 +112,14 @@ task findConventions << {
     println project.getConvention()
 }
 
-repositories {
-    jcenter()
-}
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
 
-dependencies {
-    compile 'com.github.navasmdc:MaterialDesign:1.+@aar'
+    dependencies {
+        classpath 'com.github.dcendents:android-maven-plugin:1.2'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
+    }
 }

@@ -179,6 +179,7 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
             ft3.replace(R.id.container, map, map.ARG_STRING);
         }
         ft3.addToBackStack(null);
+
         ft3.commit();
 
     }

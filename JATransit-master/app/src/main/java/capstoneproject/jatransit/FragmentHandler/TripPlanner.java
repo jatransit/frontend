@@ -8,8 +8,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.gc.materialdesign.views.ButtonRectangle;
 import com.rengwuxian.materialedittext.MaterialEditText;
 
 import capstoneproject.jatransit.R;
@@ -25,10 +27,11 @@ public class TripPlanner extends Fragment implements View.OnClickListener {
     private String URL_FEED ="http://jatransit.appspot.com/routes";
 
     private View rootView;
+    private TextView text;
 
     private MaterialEditText textOrigin;
     private MaterialEditText textDestination;
-    private Button search;
+    private ButtonRectangle search;
 
 
 
@@ -38,8 +41,8 @@ public class TripPlanner extends Fragment implements View.OnClickListener {
         rootView = inflater.inflate(R.layout.tripplanner,container,false);
         textOrigin = (MaterialEditText)rootView.findViewById(R.id.origin);
         textDestination = (MaterialEditText)rootView.findViewById(R.id.destination);
-        search = (Button)rootView.findViewById(R.id.tripsearch);
-
+        search = (ButtonRectangle)rootView.findViewById(R.id.tripsearch);
+        text = (TextView) getActivity().findViewById(R.id.title);
 
         search.setOnClickListener(this);
 
@@ -72,22 +75,26 @@ public class TripPlanner extends Fragment implements View.OnClickListener {
             bundle.putString("origin", origin);
             bundle.putString("destination", destine);
 
-            Searchfragment searchfragment =Searchfragment.newInstance(1,"");
+            TripPlannerQueryFragment tripPlannerQueryFragment = TripPlannerQueryFragment.newInstance(1, "");
 
-            searchfragment.setArguments(bundle);
+            tripPlannerQueryFragment.setArguments(bundle);
 
             FragmentManager fm5 = getActivity().getSupportFragmentManager();
             FragmentTransaction ft5 = fm5.beginTransaction();
 
 
-            if (searchfragment.isAdded()) {
-                ft5.show(searchfragment);
+            if (tripPlannerQueryFragment.isAdded()) {
+                ft5.show(tripPlannerQueryFragment);
             } else {
-                ft5.replace(R.id.container, searchfragment, "");
+                ft5.replace(R.id.container, tripPlannerQueryFragment, "");
             }
             ft5.addToBackStack(null);
             ft5.commit();
 
+            text.setText(ARG_STRING);
+        }else{
+
+            Toast.makeText(getActivity(),"Empty Fields",Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -1,5 +1,6 @@
 package capstoneproject.jatransit;
 
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -47,7 +48,7 @@ public class MainActivity extends ActionBarActivity{
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.actionbar_layout);
-        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(0xff005fbf));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#D4AF37")));
 
 
         /**
@@ -82,7 +83,7 @@ public class MainActivity extends ActionBarActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.exit:
-
+                finish();
                 return true;
 
             case R.id.settings:

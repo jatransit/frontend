@@ -20,7 +20,7 @@ import capstoneproject.jatransit.data.FeedItem;
 /**
  * Created by Caliph Cole on 04/13/2015.
  */
-public class Searchfragment extends Fragment {
+public class TripPlannerQueryFragment extends Fragment {
 
     public View rootView;
     private ListView listView;
@@ -34,7 +34,7 @@ public class Searchfragment extends Fragment {
     public DBHelper db;
 
     String s;
-    public Searchfragment(){
+    public TripPlannerQueryFragment(){
 
 
     }
@@ -49,7 +49,7 @@ public class Searchfragment extends Fragment {
         listView = (ListView) rootView.findViewById(R.id.listView);
 
         Bundle bundle = getArguments();
-        String s = bundle.getString("query");
+
         String origin = bundle.getString("origin");
         String destine = bundle.getString("destination");
 
@@ -64,17 +64,10 @@ public class Searchfragment extends Fragment {
         rootView.setVisibility(android.view.View.VISIBLE);
 
 
-        try{
-            if (s!= null){
-                query(s);
-            }else{
-                String temp = origin + " to " + destine;
-                query(temp);
-            }
 
-        }catch (Exception e){
 
-        }
+        query(origin,destine);
+
 
 
 
@@ -82,11 +75,11 @@ public class Searchfragment extends Fragment {
 
     }
 
-    public void query(String s ) {
+    public void query(String o ,String d) {
 
         db = new DBHelper(getActivity());
 
-        List<FeedItem> res = db.getAllRoutesByQuery(s);
+        List<FeedItem> res = db.tripPlannerQuery(o,d);
             for (int i = 0; i < res.size(); i++) {
                 feedItems.add(0, res.get(i));
             }
@@ -99,10 +92,10 @@ public class Searchfragment extends Fragment {
 
     }
 
-    public static Searchfragment newInstance(int someInt, String s){
+    public static TripPlannerQueryFragment newInstance(int someInt, String s){
 
 
-        Searchfragment sFragment = new Searchfragment();
+        TripPlannerQueryFragment sFragment = new TripPlannerQueryFragment();
         Bundle args = new Bundle();
         args.putInt(s, someInt);
         sFragment.setArguments(args);
