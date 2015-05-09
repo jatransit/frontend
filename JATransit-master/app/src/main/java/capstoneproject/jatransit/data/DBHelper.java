@@ -179,9 +179,9 @@ public class DBHelper extends SQLiteOpenHelper {
             Cursor cursorDes1 = dbdes1.rawQuery(selectQuerydes1, null);
             if(cursorOrg1.moveToFirst() &&cursorDes1.moveToFirst()) {
                 do {
-                    if(cursorOrg1.getString(3) == cursorDes1.getString(2))
-                    String selectQuery1 = "SELECT  * FROM " + ROUTES_TABLE_NAME + " WHERE origin LIKE '%" + org + "%'";
-
+                    if(cursorOrg1.getString(3) == cursorDes1.getString(2)) {
+                        //String selectQuery1 = "SELECT  * FROM " + ROUTES_TABLE_NAME + " WHERE origin LIKE '%" + org + "%'";
+                    }
                 } while (cursorOrg1.moveToNext()&& cursorOrg1.moveToNext() );
             }else{
 

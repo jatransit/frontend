@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    
+    <ImageView
+        android:layout_width="170dp"
+        android:layout_height="120dp"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/yellowbus"/>
+    <com.rengwuxian.materialedittext.MaterialAutoCompleteTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/route"/>
+    <com.rengwuxian.materialedittext.MaterialAutoCompleteTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/currentlocation"/>
+
+    <com.rengwuxian.materialedittext.MaterialAutoCompleteTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/type"/>
+    <com.rengwuxian.materialedittext.MaterialAutoCompleteTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/time"/>
+    <com.rengwuxian.materialedittext.MaterialAutoCompleteTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/distance"
+        android:text="distance"
+        android:layout_alignParentRight="true"/>
+
+
+
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="600px"
+              android:orientation="vertical"
+              android:layout_alignParentBottom="true">
+
+                    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+                        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+                        android:layout_height="match_parent" android:id="@+id/map" tools:context=".MapsActivity"
+                        android:name="com.google.android.gms.maps.SupportMapFragment" >
+
+                    </fragment>
+                    <com.google.android.gms.maps.MapView android:id="@+id/mapview"
+
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        />
+
+          </LinearLayout>
+
+</RelativeLayout>

@@ -7,6 +7,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -52,6 +55,7 @@ public class HomeScreen extends Fragment {
 
          rootView = inflater.inflate(R.layout.homescreen, container,
                 false);
+        setHasOptionsMenu(true);
 
 
         ((GridView) rootView.findViewById(R.id.option))
@@ -63,6 +67,43 @@ public class HomeScreen extends Fragment {
         gridViewListener();//handles the grid view listener
 
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        MenuItem item = menu.findItem(R.id.action_search);
+        item.setVisible(true);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.exit:
+                getActivity().finish();
+                return true;
+
+            case R.id.settings:
+
+                return true;
+
+            case R.id.action_search:
+
+
+
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**

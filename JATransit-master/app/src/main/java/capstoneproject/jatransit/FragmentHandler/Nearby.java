@@ -158,7 +158,7 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
 
        Nearby nfragment = new Nearby();
         Bundle args = new Bundle();
-        args.putInt("homescreen", someInt);
+        args.putInt("Nearby", someInt);
         nfragment.setArguments(args);
         return nfragment;
     }
@@ -172,15 +172,22 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
         FragmentManager fm3 = getActivity().getSupportFragmentManager();
         FragmentTransaction ft3 = fm3.beginTransaction();
 
+        NearbyInfo info = NearbyInfo.newInstance(1, NearbyInfo.ARG_STRING);
+        FragmentManager fm4 = getActivity().getSupportFragmentManager();
+        FragmentTransaction ft4 =  fm4.beginTransaction();
 
-        if (map.isAdded()) {
-            ft3.show(map);
+
+        if (info.isAdded()){//(map.isAdded()) {
+           // ft3.show(map);
+            ft4.show(info);
         } else {
-            ft3.replace(R.id.container, map, map.ARG_STRING);
+           // ft3.replace(R.id.container, map, map.ARG_STRING);
+            ft4.replace(R.id.container, info, info.ARG_STRING);
         }
-        ft3.addToBackStack(null);
-
-        ft3.commit();
+       // ft3.addToBackStack(null);
+            ft4.addToBackStack(null);
+            ft4.commit();
+        //ft3.commit();
 
     }
 }
