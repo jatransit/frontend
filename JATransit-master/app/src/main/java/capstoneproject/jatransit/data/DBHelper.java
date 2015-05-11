@@ -3,6 +3,7 @@ package capstoneproject.jatransit.data;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorJoiner;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -31,7 +32,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public DBHelper(Context context)
     {
-        super(context, DATABASE_NAME , null, 1);
+        super(context, DATABASE_NAME, null, 1);
     }
 
 
@@ -57,11 +58,11 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
-        contentValues.put(ROUTE_COLUMN_ROUTE, "Route Number: " + route);
-        contentValues.put(ROUTE_COLUMN_ORIGIN, "Origin: " + origin);
-        contentValues.put(ROUTE_COLUMN_DESTINATION, "Destination: " + destination);
-        contentValues.put(ROUTE_COLUMN_VIA,"Via: " + via);
-        contentValues.put(ROUTE_COLUMN_ROUTETYPE,"Route Type: " + route_type);
+        contentValues.put(ROUTE_COLUMN_ROUTE,route);
+        contentValues.put(ROUTE_COLUMN_ORIGIN, origin);
+        contentValues.put(ROUTE_COLUMN_DESTINATION,destination);
+        contentValues.put(ROUTE_COLUMN_VIA, via);
+        contentValues.put(ROUTE_COLUMN_ROUTETYPE,route_type);
 
         db.insert(ROUTES_TABLE_NAME, null, contentValues);
         db.close();
@@ -158,7 +159,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public List<FeedItem> tripPlannerQuery(String org,String des) {
+   /* public List<FeedItem> tripPlannerQuery(String org,String des) {
 
         // first query for only one bus
         String selectQuery = "SELECT  * FROM " + ROUTES_TABLE_NAME +" WHERE origin LIKE '%"+ org + "%' AND destination LIKE '%" + des+"%'" ;
@@ -189,7 +190,7 @@ public class DBHelper extends SQLiteOpenHelper {
         }
 
         return null;
-    }
+    }*/
     public List<FeedItem> getAllRoutesByQuery(String s ){
         List<FeedItem>  routeList = new ArrayList<FeedItem>();
 
@@ -226,17 +227,17 @@ public class DBHelper extends SQLiteOpenHelper {
                 item.setRouteType(cursor.getString(5));
                 // Log.d("type",""+cursor.getString(5));
 
-                // Adding contact to list
+                // Adding route to list
                 routeList.add(item);
             } while (cursor.moveToNext());
         }
 
-        // return contact list
+        // return Route list
         return routeList;
     }
 
 
-    // Getting All Contacts
+    // Getting All Routes
     public List<FeedItem> getAllRoutes() {
         List<FeedItem>  routeList = new ArrayList<FeedItem>();
 
@@ -252,15 +253,15 @@ public class DBHelper extends SQLiteOpenHelper {
             do {
 
                 FeedItem item = new FeedItem();
-                item.setOrigin(cursor.getString(2));
+                item.setOrigin("Origin: " +cursor.getString(2));
                // Log.d("origin",""+cursor.getString(2));
-                item.setDestination(cursor.getString(3));
+                item.setDestination("Destination: " + cursor.getString(3));
                 //Log.d("des",""+cursor.getString(3));
-                item.setRoute(cursor.getString(1));
+                item.setRoute("Route Number: " + cursor.getString(1));
                 //Log.d("route",""+cursor.getString(1));
-                item.setVia(cursor.getString(4));
+                item.setVia("Via: " + cursor.getString(4));
                // Log.d("via",""+cursor.getString(4));
-                item.setRouteType(cursor.getString(5));
+                item.setRouteType("Route Type: " + cursor.getString(5));
                 // Log.d("type",""+cursor.getString(5));
 
                 // Adding contact to list
@@ -287,4 +288,444 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
 
+    public List<FeedItem> tripPlanner(String org, String des){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        List<FeedItem>  routeList = new ArrayList<FeedItem>();
+
+
+        String routequery = "SELECT route, origin, destination FROM routes";
+        //One bus
+        String firstquery1 = "SELECT * FROM routes WHERE origin LIKE '%" +org+"' AND destination LIKE '%" +des+"'";
+        String firstquery2 = "SELECT * FROM routes WHERE origin LIKE '%" +des+"' AND destination LIKE '%" +org+"'";
+
+        //Origin from one bus destination from another bus
+        String secondquery1 = "SELECT route, origin, destination FROM routes WHERE origin ='"+org+"'";
+        String thirdquery1 = "SELECT route, origin, destination FROM routes WHERE destination ='"+ des+"'";
+        String secondquery2 = "SELECT route, origin, destination FROM routes WHERE origin ='"+des+"'";
+        String thirdquery2 = "SELECT route, origin, destination FROM routes WHERE destination ='"+ org+"'";
+
+
+
+
+        // Orgin and destination in the via attribute
+        String fourthquery = "SELECT route, origin, destination FROM routes WHERE via ='"+org+"'";
+        String fifthquery = "SELECT route, origin, destination FROM routes WHERE via = '"+des+"'";
+
+        //switch
+       // String secondquery = "SELECT route, origin, destination FROM routes WHERE origin ='"+des+"'";
+       // String thirdquery = "SELECT route, origin, destination FROM routes WHERE destination ='"+ org+"'";
+
+        // get Data with query strings
+        Cursor cursorRoutes = db.rawQuery(routequery,null);
+        Cursor cursorFirst1 = db.rawQuery(firstquery1,null);
+        Cursor cursorFirst2 = db.rawQuery(firstquery2,null);
+        Cursor cursorSecond1 = db.rawQuery(secondquery1,null);
+        Cursor cursorThird1 = db.rawQuery(thirdquery1,null);
+        Cursor cursorSecond2 = db.rawQuery(secondquery2,null);
+        Cursor cursorThird2 = db.rawQuery(thirdquery2,null);
+        Cursor cursorFourth = db.rawQuery(fourthquery,null);
+        Cursor cursorFifth = db.rawQuery(fifthquery,null);
+
+        // First check if there is a bus that goes from origin to destination
+        if (cursorFirst1.getCount()>0 && cursorFirst1 != null) {
+
+            Log.d("Tag","First");
+            // looping through all rows and adding to list
+            if (cursorFirst1.moveToFirst()) {
+                do {
+
+                    FeedItem item = new FeedItem();
+                    item.setOrigin("Origin: " + cursorFirst1.getString(2));
+                    // Log.d("origin",""+cursor.getString(2));
+                    item.setDestination("Destination: " + cursorFirst1.getString(3));
+                    //Log.d("des",""+cursor.getString(3));
+                    item.setRoute("Route Number: " + cursorFirst1.getString(1));
+                    //Log.d("route",""+cursor.getString(1));
+                    item.setVia("Via: " + cursorFirst1.getString(4));
+                    // Log.d("via",""+cursor.getString(4));
+                    item.setRouteType("Route Type: " + cursorFirst1.getString(5));
+                    // Log.d("type",""+cursor.getString(5));
+
+                    // Adding contact to list
+                    routeList.add(item);
+                } while (cursorFirst1.moveToNext());
+
+                return routeList;
+            }
+
+        }else if(cursorFirst2.getCount()>0 && cursorFirst2 != null){
+            // looping through all rows and adding to list
+            Log.d("Tag","Second");
+            if (cursorFirst2.moveToFirst()) {
+                do {
+
+                    FeedItem item = new FeedItem();
+                    item.setOrigin("Origin: " + cursorFirst2.getString(3));
+                    // Log.d("origin",""+cursor.getString(2));
+                    item.setDestination("Destination: " + cursorFirst2.getString(2));
+                    //Log.d("des",""+cursor.getString(3));
+                    item.setRoute("Route Number: " + cursorFirst2.getString(1));
+                    //Log.d("route",""+cursor.getString(1));
+                    item.setVia("Via: " + cursorFirst2.getString(4));
+                    // Log.d("via",""+cursor.getString(4));
+                    item.setRouteType("Route Type: " + cursorFirst2.getString(5));
+                    // Log.d("type",""+cursor.getString(5));
+
+                    // Adding contact to list
+                    routeList.add(item);
+                } while (cursorFirst2.moveToNext());
+                return routeList;
+            }
+
+
+        }//Check orgin and destination seperately
+        else if(cursorSecond1.getCount()>0 || cursorSecond1!=null){//check if origin is found
+
+            if (cursorThird1.getCount()>0|| cursorThird1 != null) {// check if destination id found
+
+                //Check origin and destination assuming the user did not use any via
+                CursorJoiner joiner = new CursorJoiner(cursorSecond1, new String[]{"destination"}, cursorThird1, new String[]{"origin"});
+                while (joiner.hasNext()) {
+                    CursorJoiner.Result result = joiner.next();
+                    switch (result) {
+                        case LEFT:
+                            // don't care about this case
+                            break;
+
+                        case RIGHT:
+                            // nor this case
+                            break;
+
+                        case BOTH:
+                            // here both original Cursors are pointing at rows that have the same user_id, so we can extract values
+                            FeedItem item = new FeedItem();
+                            FeedItem item1 = new FeedItem();
+                            item.setOrigin(cursorSecond1.getString(2));
+                            item1.setOrigin(cursorThird1.getString(2));
+                            // Log.d("origin",""+cursor.getString(2));
+                            item.setDestination(cursorSecond1.getString(3));
+                            item1.setDestination(cursorThird1.getString(3));
+                            //Log.d("des",""+cursor.getString(3));
+                            item.setRoute(cursorSecond1.getString(1));
+                            item1.setRoute(cursorThird1.getString(1));
+                            //Log.d("route",""+cursor.getString(1));
+                            item.setVia(cursorSecond1.getString(4));
+                            item1.setVia(cursorThird1.getString(4));
+                            // Log.d("via",""+cursor.getString(4));
+                            item.setRouteType(cursorSecond1.getString(5));
+                            item1.setRouteType(cursorThird1.getString(5));
+                            // Log.d("type",""+cursor.getString(5));
+
+                            // Adding contact to list
+                            routeList.add(item);
+                            routeList.add(item1);
+
+                            return routeList;
+
+                    }
+                }
+                // if  routelist is null then  need three buses
+                if (routeList.size() == 0) {//Means that we need three buses
+               //take the destination of secondquery and the orgin of thirdquery and try to find a table that as a bus that runs that route
+
+                 // CursorJoiner = new CursorJoiner(cursorRoutes,new String[]{""},cursorSecond,,cursorThird,)
+                }
+            }else if(cursorThird2.getCount()>0|| cursorThird2 != null){
+                // switch dest to org
+            }
+            else if(cursorFifth.getCount()>0 && cursorFifth!= null){
+                // if check destination prove false then search using the via
+
+                //Check origin and destination assuming the user did not use any via
+                CursorJoiner joiner = new CursorJoiner(cursorSecond1, new String[]{"destination"}, cursorFifth, new String[]{"origin"});
+                while (joiner.hasNext()) {
+                    CursorJoiner.Result result = joiner.next();
+                    switch (result) {
+                        case LEFT:
+                            // don't care about this case
+                            break;
+
+                        case RIGHT:
+                            // nor this case
+                            break;
+
+                        case BOTH:
+                            // here both original Cursors are pointing at rows that have the same user_id, so we can extract values
+                            FeedItem item = new FeedItem();
+                            FeedItem item1 = new FeedItem();
+                            item.setOrigin(cursorSecond1.getString(2));
+                            item1.setOrigin(cursorFifth.getString(2));
+                            // Log.d("origin",""+cursor.getString(2));
+                            item.setDestination(cursorSecond1.getString(3));
+                            item1.setDestination(cursorFifth.getString(3));
+                            //Log.d("des",""+cursor.getString(3));
+                            item.setRoute(cursorSecond1.getString(1));
+                            item1.setRoute(cursorFifth.getString(1));
+                            //Log.d("route",""+cursor.getString(1));
+                            item.setVia(cursorSecond1.getString(4));
+                            item1.setVia(cursorFifth.getString(4));
+                            // Log.d("via",""+cursor.getString(4));
+                            item.setRouteType(cursorSecond1.getString(5));
+                            item1.setRouteType(cursorFifth.getString(5));
+                            // Log.d("type",""+cursor.getString(5));
+
+                            // Adding contact to list
+                            routeList.add(item);
+                            routeList.add(item1);
+
+                            return routeList;
+
+                    }
+                }
+            }
+        }else if(cursorSecond2.getCount()>0 && cursorSecond2 !=null){
+
+            if (cursorThird2.getCount()>0|| cursorThird2 != null) {// check if destination id found
+
+                //Check origin and destination assuming the user did not use any via
+                CursorJoiner joiner = new CursorJoiner(cursorSecond2, new String[]{"destination"}, cursorThird2, new String[]{"origin"});
+                while (joiner.hasNext()) {
+                    CursorJoiner.Result result = joiner.next();
+                    switch (result) {
+                        case LEFT:
+                            // don't care about this case
+                            break;
+
+                        case RIGHT:
+                            // nor this case
+                            break;
+
+                        case BOTH:
+                            // here both original Cursors are pointing at rows that have the same user_id, so we can extract values
+                            FeedItem item = new FeedItem();
+                            FeedItem item1 = new FeedItem();
+                            item.setOrigin(cursorSecond2.getString(2));
+                            item1.setOrigin(cursorThird2.getString(2));
+                            // Log.d("origin",""+cursor.getString(2));
+                            item.setDestination(cursorSecond2.getString(3));
+                            item1.setDestination(cursorThird2.getString(3));
+                            //Log.d("des",""+cursor.getString(3));
+                            item.setRoute(cursorSecond2.getString(1));
+                            item1.setRoute(cursorThird2.getString(1));
+                            //Log.d("route",""+cursor.getString(1));
+                            item.setVia(cursorSecond2.getString(4));
+                            item1.setVia(cursorThird2.getString(4));
+                            // Log.d("via",""+cursor.getString(4));
+                            item.setRouteType(cursorSecond2.getString(5));
+                            item1.setRouteType(cursorThird2.getString(5));
+                            // Log.d("type",""+cursor.getString(5));
+
+                            // Adding contact to list
+                            routeList.add(item);
+                            routeList.add(item1);
+
+                            return routeList;
+
+                    }
+                }
+                // if  routelist is null then  need three buses
+                if (routeList.size() == 0) {//Means that we need three buses
+                    //take the destination of secondquery and the orgin of thirdquery and try to find a table that as a bus that runs that route
+
+                    // CursorJoiner = new CursorJoiner(cursorRoutes,new String[]{""},cursorSecond,,cursorThird,)
+                }
+            }else if(cursorFifth.getCount()>0 && cursorFifth!= null){
+                // if check destination prove false then search using the via
+
+                //Check origin and destination assuming the user did not use any via
+                CursorJoiner joiner = new CursorJoiner(cursorSecond2, new String[]{"destination"}, cursorFifth, new String[]{"origin"});
+                while (joiner.hasNext()) {
+                    CursorJoiner.Result result = joiner.next();
+                    switch (result) {
+                        case LEFT:
+                            // don't care about this case
+                            break;
+
+                        case RIGHT:
+                            // nor this case
+                            break;
+
+                        case BOTH:
+                            // here both original Cursors are pointing at rows that have the same user_id, so we can extract values
+                            FeedItem item = new FeedItem();
+                            FeedItem item1 = new FeedItem();
+                            item.setOrigin(cursorSecond2.getString(2));
+                            item1.setOrigin(cursorFifth.getString(2));
+                            // Log.d("origin",""+cursor.getString(2));
+                            item.setDestination(cursorSecond2.getString(3));
+                            item1.setDestination(cursorFifth.getString(3));
+                            //Log.d("des",""+cursor.getString(3));
+                            item.setRoute(cursorSecond2.getString(1));
+                            item1.setRoute(cursorFifth.getString(1));
+                            //Log.d("route",""+cursor.getString(1));
+                            item.setVia(cursorSecond2.getString(4));
+                            item1.setVia(cursorFifth.getString(4));
+                            // Log.d("via",""+cursor.getString(4));
+                            item.setRouteType(cursorSecond2.getString(5));
+                            item1.setRouteType(cursorFifth.getString(5));
+                            // Log.d("type",""+cursor.getString(5));
+
+                            // Adding contact to list
+                            routeList.add(item);
+                            routeList.add(item1);
+
+                            return routeList;
+
+                    }
+                }
+            }
+
+
+        }//if origin is not found, use the via
+        else if(cursorFourth.getCount()>0 && cursorFourth !=null){
+            if (cursorThird1.getCount()>0|| cursorThird1 != null) {// check if destination is found
+
+                //Check origin and destination assuming the user did not use any via
+                CursorJoiner joiner = new CursorJoiner(cursorFourth, new String[]{"destination"}, cursorThird1, new String[]{"origin"});
+                while (joiner.hasNext()) {
+                    CursorJoiner.Result result = joiner.next();
+                    switch (result) {
+                        case LEFT:
+                            // don't care about this case
+                            break;
+
+                        case RIGHT:
+                            // nor this case
+                            break;
+
+                        case BOTH:
+                            // here both original Cursors are pointing at rows that have the same user_id, so we can extract values
+                            FeedItem item = new FeedItem();
+                            FeedItem item1 = new FeedItem();
+                            item.setOrigin(cursorSecond2.getString(2));
+                            item1.setOrigin(cursorThird1.getString(2));
+                            // Log.d("origin",""+cursor.getString(2));
+                            item.setDestination(cursorFourth.getString(3));
+                            item1.setDestination(cursorThird1.getString(3));
+                            //Log.d("des",""+cursor.getString(3));
+                            item.setRoute(cursorFourth.getString(1));
+                            item1.setRoute(cursorThird1.getString(1));
+                            //Log.d("route",""+cursor.getString(1));
+                            item.setVia(cursorFourth.getString(4));
+                            item1.setVia(cursorThird1.getString(4));
+                            // Log.d("via",""+cursor.getString(4));
+                            item.setRouteType(cursorFourth.getString(5));
+                            item1.setRouteType(cursorThird1.getString(5));
+                            // Log.d("type",""+cursor.getString(5));
+
+                            // Adding contact to list
+                            routeList.add(item);
+                            routeList.add(item1);
+
+                            return routeList;
+
+                    }
+                }
+
+                // if  routelist is null then  need three buses
+                if (routeList.size() == 0) {//Means that we need three buses
+                    //take the destination of querysecond and the orgin of querythird and try to find a table that as a bus that runs that route
+
+                }
+            }else if(cursorThird2.getCount()>0|| cursorThird2 != null){
+
+                //Check origin and destination assuming the user did not use any via
+                CursorJoiner joiner = new CursorJoiner(cursorFourth, new String[]{"destination"}, cursorThird2, new String[]{"origin"});
+                while (joiner.hasNext()) {
+                    CursorJoiner.Result result = joiner.next();
+                    switch (result) {
+                        case LEFT:
+                            // don't care about this case
+                            break;
+
+                        case RIGHT:
+                            // nor this case
+                            break;
+
+                        case BOTH:
+                            // here both original Cursors are pointing at rows that have the same user_id, so we can extract values
+                            FeedItem item = new FeedItem();
+                            FeedItem item1 = new FeedItem();
+                            item.setOrigin(cursorSecond2.getString(2));
+                            item1.setOrigin(cursorThird1.getString(2));
+                            // Log.d("origin",""+cursor.getString(2));
+                            item.setDestination(cursorFourth.getString(3));
+                            item1.setDestination(cursorThird1.getString(3));
+                            //Log.d("des",""+cursor.getString(3));
+                            item.setRoute(cursorFourth.getString(1));
+                            item1.setRoute(cursorThird1.getString(1));
+                            //Log.d("route",""+cursor.getString(1));
+                            item.setVia(cursorFourth.getString(4));
+                            item1.setVia(cursorThird1.getString(4));
+                            // Log.d("via",""+cursor.getString(4));
+                            item.setRouteType(cursorFourth.getString(5));
+                            item1.setRouteType(cursorThird1.getString(5));
+                            // Log.d("type",""+cursor.getString(5));
+
+                            // Adding contact to list
+                            routeList.add(item);
+                            routeList.add(item1);
+
+                            return routeList;
+
+                    }
+                }
+
+                // if  routelist is null then  need three buses
+                if (routeList.size() == 0) {//Means that we need three buses
+                    //take the destination of querysecond and the orgin of querythird and try to find a table that as a bus that runs that route
+
+                }
+            } else if(cursorFifth.getCount()>0 && cursorFifth!= null){
+                // if check destination prove false then search using the via
+
+                //Check origin and destination assuming the user did not use any via
+                CursorJoiner joiner = new CursorJoiner(cursorSecond2, new String[]{"destination"}, cursorFifth, new String[]{"origin"});
+                while (joiner.hasNext()) {
+                    CursorJoiner.Result result = joiner.next();
+                    switch (result) {
+                        case LEFT:
+                            // don't care about this case
+                            break;
+
+                        case RIGHT:
+                            // nor this case
+                            break;
+
+                        case BOTH:
+                            // here both original Cursors are pointing at rows that have the same user_id, so we can extract values
+                            FeedItem item = new FeedItem();
+                            FeedItem item1 = new FeedItem();
+                            item.setOrigin(cursorSecond2.getString(2));
+                            item1.setOrigin(cursorFifth.getString(2));
+                            // Log.d("origin",""+cursor.getString(2));
+                            item.setDestination(cursorSecond2.getString(3));
+                            item1.setDestination(cursorFifth.getString(3));
+                            //Log.d("des",""+cursor.getString(3));
+                            item.setRoute(cursorSecond2.getString(1));
+                            item1.setRoute(cursorFifth.getString(1));
+                            //Log.d("route",""+cursor.getString(1));
+                            item.setVia(cursorSecond2.getString(4));
+                            item1.setVia(cursorFifth.getString(4));
+                            // Log.d("via",""+cursor.getString(4));
+                            item.setRouteType(cursorSecond2.getString(5));
+                            item1.setRouteType(cursorFifth.getString(5));
+                            // Log.d("type",""+cursor.getString(5));
+
+                            // Adding contact to list
+                            routeList.add(item);
+                            routeList.add(item1);
+
+                            return routeList;
+
+                    }
+                }
+            }
+
+      }else{
+            Log.d("results: ","No results");
+        }
+        return routeList;
+    }
 }

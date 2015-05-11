@@ -14,6 +14,7 @@ import java.util.List;
 
 import capstoneproject.jatransit.FragmentHandler.HomeScreen;
 import capstoneproject.jatransit.FragmentHandler.MapsFragment;
+import capstoneproject.jatransit.FragmentHandler.Settings;
 import capstoneproject.jatransit.data.DBHelper;
 import capstoneproject.jatransit.data.FeedItem;
 
@@ -22,12 +23,13 @@ import capstoneproject.jatransit.data.FeedItem;
  */
 public class MainActivity extends ActionBarActivity{
 
-    private static final String TAG = "DemoActivity";
+    private static final String TAG = "MainActivity";
 
 
 
     private MapsFragment maps;
 
+    private Settings settings;
     private HomeScreen home;
     public TextView text;
     public DBHelper routedb;
@@ -37,7 +39,7 @@ public class MainActivity extends ActionBarActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_layout);//main layout
+        setContentView(R.layout.main_layout);//main settings
 
 
 
@@ -60,17 +62,6 @@ public class MainActivity extends ActionBarActivity{
 
     }
 
-  /*  @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main_menu, menu);
-
-        MenuItem item = menu.findItem(R.id.action_search);
-        item.setVisible(false);
-
-
-        return super.onCreateOptionsMenu(menu);
-    }*/
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -82,11 +73,23 @@ public class MainActivity extends ActionBarActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.exit:
-                finish();
+                //finish();
                 return true;
 
             case R.id.settings:
 
+               /* settings = Settings.newInstance(1, settings.ARG_STRING);
+                FragmentManager fm9 = getSupportFragmentManager();
+                FragmentTransaction ft9 = fm9.beginTransaction();
+
+
+                if (settings.isAdded()) {
+                    ft9.show(settings);
+                } else {
+                    ft9.replace(R.id.container, settings, settings.ARG_STRING);
+                }
+
+                ft9.commit();*/
                 return true;
 
             case R.id.action_search:
@@ -99,14 +102,14 @@ public class MainActivity extends ActionBarActivity{
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
+   @Override
     public void onBackPressed() {
 
         if(home.isVisible()){
 
             finish();
         }else
-            home.onBackPressed();
+
             super.onBackPressed();
 
     }

@@ -79,7 +79,7 @@ public class TripPlannerQueryFragment extends Fragment {
 
         db = new DBHelper(getActivity());
 
-        List<FeedItem> res = db.tripPlannerQuery(o,d);
+        List<FeedItem> res = db.tripPlanner(o,d);
             for (int i = 0; i < res.size(); i++) {
                 feedItems.add(0, res.get(i));
             }

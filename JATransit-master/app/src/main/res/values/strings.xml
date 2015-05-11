@@ -10,9 +10,10 @@
     <string name="action_contacts">Contacts</string>
     <string name="action_help">Help</string>
     <string name="action_check_updates">Check for Updates</string>
+
     <string name="nearby">NEARBY</string>
     <!-- Search  -->
-    <string name="search_hint">Search color..</string>
+    <string name="search_hint">Route#.. Ori</string>
 
     <string name="body">This android application displays nearby bus timing information and bus routes that JUTC operates.
                         This application utilizes the GPS built in to your smart phone to pinpoint your
@@ -20,9 +21,9 @@
                         at that bus stop in the order of arrival time.
     </string>
     <string-array name="questions">
-        <item>What does the Acronym JUTC mean?</item>
-        <item>What is the JUTC SMART CARD?</item>
-        <item>What is the size and “make up” of the JUTC fleet?</item>
+        <item>1. What does the Acronym JUTC mean?</item>
+        <item>2. What is the JUTC SMART CARD?</item>
+        <item>3. What is the size and “make up” of the JUTC fleet?</item>
     </string-array>
 
     <string-array name="answers">

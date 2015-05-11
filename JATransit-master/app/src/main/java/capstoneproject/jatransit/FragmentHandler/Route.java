@@ -12,8 +12,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Cache;
@@ -53,6 +55,7 @@ public class Route extends Fragment {
     public View rootView;
     private ListView listView;
     private FeedListAdapter listAdapter;
+    private LinearLayout linlaHeaderProgress;
 
     private List<FeedItem> feedItems;
     private FragmentActivity faActivity;
@@ -60,27 +63,43 @@ public class Route extends Fragment {
 
     public DBHelper routedb;
 
+    private TextView text;
 
     private String URL_FEED ="http://jatransit.appspot.com/routes";
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         setHasOptionsMenu(true);
+
         routedb = new DBHelper(getActivity());
-       faActivity  = (FragmentActivity)    super.getActivity();
+        faActivity  = (FragmentActivity)    super.getActivity();
+       // faActivity.requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         rootView = inflater.inflate(R.layout.listview, container,false);
+
+        LinearLayout linlaHeaderProgress = (LinearLayout)rootView.findViewById(R.id.progress);
+
+
         listView = (ListView) rootView.findViewById(R.id.listView);
 
-       feedItems = new ArrayList<FeedItem>();
 
-       listAdapter = new FeedListAdapter(faActivity ,feedItems);
+        feedItems = new ArrayList<FeedItem>();
 
-       listView.setAdapter(listAdapter);
+        listAdapter = new FeedListAdapter(faActivity ,feedItems);
+
+
+        faActivity.setProgressBarIndeterminateVisibility(true);
+
+        listView.setAdapter(listAdapter);
 
 
         rootView.setVisibility(android.view.View.VISIBLE);
+
+        text = new TextView(getActivity());
+        text = (TextView) getActivity().findViewById(R.id.title);
+        text.setText(ARG_STRING);
 
         try {
             cache = AppController.getInstance().getRequestQueue().getCache();
@@ -190,15 +209,18 @@ public class Route extends Fragment {
 
 
             List<FeedItem> temp = routedb.getAllRoutes();
-            for(int i = 0;i< temp.size();i++) {
+            for(int i = 0;i< temp.size(); i++) {
                 feedItems.add(0, temp.get(i));
             }
 
-            Log.d("Tag",""+ feedItems.size());
+            Log.d("Tag", "" + feedItems.size());
 
 
 
-           listAdapter.notifyDataSetChanged();
+            listAdapter.notifyDataSetChanged();
+
+            rootView.findViewById(R.id.progress).setVisibility(View.GONE);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -216,7 +238,7 @@ public class Route extends Fragment {
                 "78 Christian Gardens via  Gregory Pk.Hagley Pk Road to Half Way Tree", "68  Greater Portmore via Gregory Park to Spanish Town ", "50ex Christian Gardens via  Gregory Pk.Hagley Pk Road to Half Way Tree", "75ex Christian Gardens via  Gregory Pk.Hagley Pk Road to Half Way Tree", "500 Greater Portmore via Gregory Park to Spanish Town",
                 "31 Hellshire via Hagley Pk Road to Half Way Tree", "32B Greater Portmore via Gregory Park to Spanish Town" };
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                R.layout.route,R.id.route, values);
+                R.settings.route,R.id.route, values);
         setListAdapter(adapter);
 
     }
@@ -247,7 +269,7 @@ public class Route extends Fragment {
             public boolean onClose() {
 
 
-                return false;
+                return true;
             }
         });
         searchView.setOnCloseListener(new SearchView.OnCloseListener(){
@@ -284,6 +306,33 @@ public class Route extends Fragment {
 
     }
 
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.exit:
+                getActivity().finish();
+                return true;
+
+            case R.id.settings:
+
+                return true;
+
+            case R.id.action_search:
+
+
+
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     public static Route newInstance(int someInt, String s){
 

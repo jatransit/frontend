@@ -5,11 +5,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.android.volley.Cache;
 import com.android.volley.Request;
@@ -38,7 +43,7 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
     public static final String ARG_STRING = "Nearby";
 
     private static int REFRESH_TIME_IN_SECONDS = 5;
-    //public SwipeRefreshLayout swipeRefreshLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private Cache cache;
     private Cache.Entry entry = null;
@@ -54,6 +59,7 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
     private List<FeedItem> feedItems;
     private FragmentActivity faActivity;
     private String status;
+    private TextView text;
 
     private String URL_FEED = "http://test123calil.co.nf/monaspot/jatransit.php";
 
@@ -62,6 +68,7 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        setHasOptionsMenu(true);
         faActivity  = (FragmentActivity)    super.getActivity();
         rootView = inflater.inflate(R.layout.listview, container,false);
         listView = (ListView) rootView.findViewById(R.id.listView);
@@ -73,6 +80,10 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
         listView.setOnItemClickListener(this);
 
         rootView.setVisibility(android.view.View.VISIBLE);
+
+        text = new TextView(getActivity());
+        text = (TextView) getActivity().findViewById(R.id.title);
+        text.setText(ARG_STRING);
 
         try {
             cache = AppController.getInstance().getRequestQueue().getCache();
@@ -150,7 +161,7 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
                 "78 Christian Gardens via  Gregory Pk.Hagley Pk Road to Half Way Tree", "68  Greater Portmore via Gregory Park to Spanish Town ", "50ex Christian Gardens via  Gregory Pk.Hagley Pk Road to Half Way Tree", "75ex Christian Gardens via  Gregory Pk.Hagley Pk Road to Half Way Tree", "500 Greater Portmore via Gregory Park to Spanish Town",
                 "31 Hellshire via Hagley Pk Road to Half Way Tree", "32B Greater Portmore via Gregory Park to Spanish Town" };
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                R.layout.nearby,R.id.route, values);
+                R.settings.nearby,R.id.route, values);
         setListAdapter(adapter);
 
     }*/
@@ -189,5 +200,41 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
             ft4.commit();
         //ft3.commit();
 
+    }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        MenuItem item = menu.findItem(R.id.action_search);
+        item.setVisible(true);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.exit:
+                getActivity().finish();
+                return true;
+
+            case R.id.settings:
+
+                return true;
+
+            case R.id.action_search:
+
+
+
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -12,8 +12,12 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -37,6 +41,7 @@ public class MapsFragment extends Fragment {
     public static final String ARG_STRING= "Map";
     View rootView;
     MapView mapView;
+    private TextView text;
 
     String [] tempCoordinates = {"18.012061/-76.797698","18.011872/-76.797670","18.011908/-76.797488","18.011949/-76.797274","18.012005/-76.796909","18.020959/-76.770758","18.020296/-76.768194","18.019689/-76.765603","18.019413/-76.764063","18.019066/-76.762303","18.018602/-76.759997","18.017878/-76.756365","18.017495/-76.754225","18.017046/-76.751666","18.016663/-76.749906","18.016230/-76.747487","18.016097/-76.746618","18.015919/-76.745695","18.015633/-76.744118","18.015409/-76.743045","18.015743/-76.742391","18.016031/-76.741809","17.994998/-76.788781","18.015682/-76.741744","18.015307/-76.741916","18.015253/-76.742117"};
 
@@ -47,6 +52,7 @@ public class MapsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater,  ViewGroup container,Bundle savedInstanceState) {
 
+        setHasOptionsMenu(true);
         super.onCreateView(inflater, container, savedInstanceState);
         rootView = inflater.inflate(R.layout.activity_maps,container,false);
         mapView = (MapView) rootView.findViewById(R.id.mapview);
@@ -85,6 +91,9 @@ public class MapsFragment extends Fragment {
 // Register the listener with the Location Manager to receive location updates
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
+        text = new TextView(getActivity());
+        text = (TextView) getActivity().findViewById(R.id.title);
+        text.setText(ARG_STRING);
 
         return rootView;
 
@@ -162,7 +171,7 @@ public class MapsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         // Needs to be called before setting the content view
         requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
-        setContentView(R.layout.activity_maps);
+        setContentView(R.settings.activity_maps);
 
 
 
@@ -254,6 +263,42 @@ public class MapsFragment extends Fragment {
     }
 
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.main_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        MenuItem item = menu.findItem(R.id.action_search);
+        item.setVisible(false);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.exit:
+                getActivity().finish();
+                return true;
+
+            case R.id.settings:
+
+                return true;
+
+            case R.id.action_search:
+
+
+
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 
 

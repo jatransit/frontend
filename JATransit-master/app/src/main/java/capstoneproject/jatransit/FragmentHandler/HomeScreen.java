@@ -33,6 +33,7 @@ public class HomeScreen extends Fragment {
      * Initialization of all the fragments
      */
     private Nearby nearby;
+    private Settings settings;
     private MapsFragment map;
     private Faq faq;
     private NFCBusTicket nfcBusTicket;
@@ -75,7 +76,7 @@ public class HomeScreen extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
 
         MenuItem item = menu.findItem(R.id.action_search);
-        item.setVisible(true);
+        item.setVisible(false);
     }
 
     @Override
@@ -94,7 +95,19 @@ public class HomeScreen extends Fragment {
 
             case R.id.settings:
 
-                return true;
+                settings = Settings.newInstance(1, settings.ARG_STRING);
+                FragmentManager fm9 = getActivity().getSupportFragmentManager();
+                FragmentTransaction ft9 = fm9.beginTransaction();
+
+
+                if (settings.isAdded()) {
+                    ft9.show(settings);
+                } else {
+                    ft9.replace(R.id.container, settings, settings.ARG_STRING);
+                }
+
+                ft9.commit();
+               return true;
 
             case R.id.action_search:
 
@@ -132,8 +145,6 @@ public class HomeScreen extends Fragment {
                                 ft0.addToBackStack(null);
                                 ft0.commit();
 
-                               text.setText( nearby.ARG_STRING);
-
                                 break;
                             case 1:
 
@@ -152,7 +163,6 @@ public class HomeScreen extends Fragment {
                                     ft1.addToBackStack(null);
                                     ft1.commit();
 
-                                text.setText(route.ARG_STRING);
                                 break;
                             case 2:
 
@@ -169,8 +179,6 @@ public class HomeScreen extends Fragment {
                                 ft2.addToBackStack(null);
                                 ft2.commit();
 
-
-                                text.setText(tripPlanner.ARG_STRING);
                                 break;
                             case 3:
                                 map = MapsFragment.newInstance(3, map.ARG_STRING);
@@ -186,9 +194,6 @@ public class HomeScreen extends Fragment {
                                 ft3.addToBackStack(null);
                                 ft3.commit();
 
-
-
-                                text.setText(map.ARG_STRING);
                                 break;
                             case 4:
 
@@ -211,9 +216,6 @@ public class HomeScreen extends Fragment {
                                 ft5.commit();
 
 
-
-
-                                text.setText(faq.ARG_STRING);
                                 break;
                             case 6:
 
@@ -229,7 +231,7 @@ public class HomeScreen extends Fragment {
                                 }
                                 ft6.addToBackStack(null);
                                 ft6.commit();
-                                text.setText(AboutUs.ARG_STRING);
+
                                 break;
 
                             case 7:
@@ -248,7 +250,7 @@ public class HomeScreen extends Fragment {
                                 ft7.commit();
 
 
-                                text.setText(pay.ARG_STRING);
+
                                 break;
 
                         }
@@ -270,14 +272,5 @@ public class HomeScreen extends Fragment {
     }
 
 
-    public void onBackPressed()
-    {
-        if(getFragmentManager().getBackStackEntryCount() == 0) {
 
-        }
-        else {
-
-            text.setText("HOME");
-        }
-    }
 }
