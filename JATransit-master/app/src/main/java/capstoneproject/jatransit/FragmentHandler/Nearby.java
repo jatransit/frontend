@@ -18,7 +18,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.android.volley.Cache;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -47,8 +46,7 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
     private static int REFRESH_TIME_IN_SECONDS = 5;
     private SwipeRefreshLayout swipeRefreshLayout;
 
-    private Cache cache;
-    private Cache.Entry entry = null;
+
 
     private static final String TAG = HomeScreen.class.getSimpleName();
 
@@ -88,8 +86,7 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
         text.setText(ARG_STRING);
 
         try {
-            cache = AppController.getInstance().getRequestQueue().getCache();
-            AppController.getInstance().getRequestQueue().getCache().invalidate(URL_FEED, true);
+
             update();
         }catch (NullPointerException e){
             e.printStackTrace();

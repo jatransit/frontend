@@ -1,12 +1,10 @@
 package capstoneproject.jatransit.FragmentHandler;
 
+import android.support.v4.app.Fragment;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,7 +12,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SearchView;
@@ -41,11 +38,11 @@ import capstoneproject.jatransit.data.DBHelper;
 import capstoneproject.jatransit.data.FeedItem;
 
 /**
- * Created by Caliph Cole on 03/05/2015.
+ * Created by Caliph Cole on 05/11/2015.
  */
-public class Route extends Fragment implements AdapterView.OnItemClickListener {
+public class Search extends Fragment{
 
-    public static final String ARG_STRING = "Route";
+    public static final String ARG_STRING = "Search";
 
 
 
@@ -61,12 +58,12 @@ public class Route extends Fragment implements AdapterView.OnItemClickListener {
 
 
     public DBHelper routedb;
-    TimeTable timetable;
 
     private TextView text;
 
     private String URL_FEED ="http://jatransit.appspot.com/routes";
 
+    private TextView message;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -77,12 +74,14 @@ public class Route extends Fragment implements AdapterView.OnItemClickListener {
         routedb = new DBHelper(getActivity());
         faActivity  = (FragmentActivity)    super.getActivity();
 
-       // faActivity.requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         rootView = inflater.inflate(R.layout.listview, container,false);
 
         LinearLayout linlaHeaderProgress = (LinearLayout)rootView.findViewById(R.id.progress);
 
 
+        message = (TextView) rootView.findViewById(R.id.message);
+        message.setText("Quick Search For Bus Routes");
+        message.setTextColor(getResources().getColor(R.color.quicksearch));
         listView = (ListView) rootView.findViewById(R.id.listView);
 
 
@@ -95,20 +94,12 @@ public class Route extends Fragment implements AdapterView.OnItemClickListener {
 
         listView.setAdapter(listAdapter);
 
-        listView.setOnItemClickListener(this);
 
         rootView.setVisibility(android.view.View.VISIBLE);
 
         text = new TextView(getActivity());
         text = (TextView) getActivity().findViewById(R.id.title);
         text.setText(ARG_STRING);
-
-        try {
-
-            update();
-        }catch (NullPointerException e){
-            e.printStackTrace();
-        }
 
 
 
@@ -140,20 +131,20 @@ public class Route extends Fragment implements AdapterView.OnItemClickListener {
                 VolleyLog.d(TAG, "Error: " + error.getMessage());
 
 
-                    if(routedb.numberOfRows()>0) {
-                        List<FeedItem> temp = routedb.getAllRoutes();
-                        for (int i = 0; i < temp.size(); i++) {
-                            feedItems.add(0, temp.get(i));
-                        }
-
-                        Log.d("Tag", "" + feedItems.size());
-
-
-                        listAdapter.notifyDataSetChanged();
-                    }else{
-
-                        Toast.makeText(getActivity(),"There are no routes locally stored", Toast.LENGTH_LONG).show();
+                if(routedb.numberOfRows()>0) {
+                    List<FeedItem> temp = routedb.getAllRoutes();
+                    for (int i = 0; i < temp.size(); i++) {
+                        feedItems.add(0, temp.get(i));
                     }
+
+                    Log.d("Tag", "" + feedItems.size());
+
+
+                    listAdapter.notifyDataSetChanged();
+                }else{
+
+                    Toast.makeText(getActivity(), "There are no routes locally stored", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -188,7 +179,7 @@ public class Route extends Fragment implements AdapterView.OnItemClickListener {
 
                     */
 
-               //Insert in the sqlite database what is on the server
+                //Insert in the sqlite database what is on the server
 
                 if(feedArray.length()> routedb.numberOfRows()){
 
@@ -239,14 +230,14 @@ public class Route extends Fragment implements AdapterView.OnItemClickListener {
         MenuItem item = menu.findItem(R.id.action_search);
         item.setVisible(true);
 
-       // Associate searchable configuration with the SearchView
+        // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
                 .getActionView();
         searchView.setSearchableInfo(searchManager
                 .getSearchableInfo(getActivity().getComponentName()));
 
-        searchView.setQueryHint("Enter Route#, Origin, Destination, Via or Type");
+        searchView.setQueryHint("Enter Route#");
         searchView.setOnCloseListener(new SearchView.OnCloseListener(){
 
             @Override
@@ -257,17 +248,31 @@ public class Route extends Fragment implements AdapterView.OnItemClickListener {
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
+
+            DBHelper db = new DBHelper(getActivity());
             @Override
-            public boolean onQueryTextSubmit(String s) {return true;}
+            public boolean onQueryTextSubmit(String s) {
+                feedItems.clear();
+                List<FeedItem> temp = db.getDataByRoute(s);
+                for(int i = 0;i< temp.size(); i++) {
+                    feedItems.add(0, temp.get(i));
+
+                }
+                if(feedItems.size()>0){
+                    message.setText("");
+                }
+                listAdapter.notifyDataSetChanged();
+                return true;
+            }
 
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                if(listAdapter.getOriginalListCount()>0){
+               /* if(listAdapter.getOriginalListCount()>0){
                     listAdapter.getFilter().filter(newText);
-                }
+                }*/
 
-               return true;
+                return false;
             }
 
 
@@ -300,37 +305,12 @@ public class Route extends Fragment implements AdapterView.OnItemClickListener {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public static Search newInstance(int someInt, String s){
 
-        FeedItem item = feedItems.get(position);
-
-        Bundle bundle = new Bundle();
-        bundle.putString("route", item.getRoute());
-
-        timetable = TimeTable.newInstance(1,timetable.ARG_STRING);
-        timetable.setArguments(bundle);
-        FragmentManager fm4 = getActivity().getSupportFragmentManager();
-        FragmentTransaction ft4 = fm4.beginTransaction();
-
-        if(timetable.isAdded()){
-            ft4.show(timetable);
-        }else{
-            ft4.replace(R.id.container,timetable,timetable.ARG_STRING);
-
-        }
-        ft4.addToBackStack(null);
-        ft4.commit();
-
-
-    }
-
-    public static Route newInstance(int someInt, String s){
-
-        Route rFragment = new Route();
+        Search sFragment = new Search();
         Bundle args = new Bundle();
         args.putInt(s, someInt);
-        rFragment.setArguments(args);
-        return rFragment;
+        sFragment.setArguments(args);
+        return sFragment;
     }
 }

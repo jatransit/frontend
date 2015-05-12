@@ -50,7 +50,7 @@ public class TripPlannerQueryFragment extends Fragment {
         rootView = inflater.inflate(R.layout.listview, container,false);
         listView = (ListView) rootView.findViewById(R.id.listView);
 
-        notfound = (TextView) rootView.findViewById(R.id.notfound);
+        notfound = (TextView) rootView.findViewById(R.id.message);
         Bundle bundle = getArguments();
 
         String origin = bundle.getString("origin");

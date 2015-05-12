@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import capstoneproject.jatransit.Adapter.ImageAdapter;
 import capstoneproject.jatransit.R;
@@ -40,6 +39,7 @@ public class HomeScreen extends Fragment {
     private Route route;
     private AboutUs AboutUs;
     private TripPlanner tripPlanner;
+    private Search search;
 
     private TextView text;
 
@@ -185,9 +185,19 @@ public class HomeScreen extends Fragment {
 
                                 break;
                             case 4:
+                                search = Search.newInstance(4,search.ARG_STRING);
+                                FragmentManager fm4 = getActivity().getSupportFragmentManager();
+                                FragmentTransaction ft4 = fm4.beginTransaction();
 
-                                Toast.makeText(getActivity(), "search",
-                                        Toast.LENGTH_SHORT).show();
+                                if(search.isAdded()){
+                                    ft4.show(search);
+                                }else{
+                                    ft4.replace(R.id.container,search,search.ARG_STRING);
+
+                                }
+                                ft4.addToBackStack(null);
+                                ft4.commit();
+
                                 break;
                             case 5:
 

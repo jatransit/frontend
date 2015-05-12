@@ -3,7 +3,6 @@ package capstoneproject.jatransit.data;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.CursorJoiner;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -40,7 +39,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
 
-        String CREATE_ROUTE_TABLE = "CREATE TABLE "+ ROUTES_TABLE_NAME+ "("+ROUTES_TABLE_ID +" INTEGER PRIMARY KEY,"+ ROUTE_COLUMN_ROUTE+" TEXT,"+ROUTE_COLUMN_ORIGIN+" TEXT,"+ ROUTE_COLUMN_DESTINATION+" TEXT,"+ROUTE_COLUMN_VIA+" TEXT,"+ROUTE_COLUMN_ROUTETYPE+" TEXT"+")";
+        String CREATE_ROUTE_TABLE = "CREATE TABLE "+ ROUTES_TABLE_NAME+ "("+ROUTES_TABLE_ID +" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"+ ROUTE_COLUMN_ROUTE+" TEXT,"+ROUTE_COLUMN_ORIGIN+" TEXT,"+ ROUTE_COLUMN_DESTINATION+" TEXT,"+ROUTE_COLUMN_VIA+" TEXT,"+ROUTE_COLUMN_ROUTETYPE+" TEXT"+")";
         db.execSQL(CREATE_ROUTE_TABLE);
     }
 
@@ -111,13 +110,34 @@ public class DBHelper extends SQLiteOpenHelper {
         return res;
     }
 
-    public Cursor getDataByOrigin(String origin){
+    public List<FeedItem> getDataByOrigin(String origin){
         SQLiteDatabase db = this.getReadableDatabase();
-
+        List<FeedItem>  routeList = new ArrayList<FeedItem>();
         String query = " SELECT * FROM routes where origin like '"+ origin +"' ORDER BY route";
-        Cursor  res = db.rawQuery(query,null);
+        Cursor  cursor = db.rawQuery(query,null);
 
-        return res;
+        if (cursor.moveToFirst()) {
+            do {
+
+                FeedItem item = new FeedItem();
+                item.setOrigin(cursor.getString(2));
+                // Log.d("origin",""+cursor.getString(2));
+                item.setDestination(cursor.getString(3));
+                //Log.d("des",""+cursor.getString(3));
+                item.setRoute(cursor.getString(1));
+                //Log.d("route",""+cursor.getString(1));
+                item.setVia(cursor.getString(4));
+                // Log.d("via",""+cursor.getString(4));
+                item.setRouteType(cursor.getString(5));
+                // Log.d("type",""+cursor.getString(5));
+
+                // Adding route to list
+                routeList.add(item);
+            } while (cursor.moveToNext());
+        }
+
+        // return Route list
+        return routeList;
     }
 
     //Mainly for the trip planner
@@ -293,7 +313,8 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         List<FeedItem>  routeList = new ArrayList<FeedItem>();
 
-
+        //String example = "SELECT * from routes AS rt1 JOIN routes AS rt2 ON rt1.id = rt2.id ";//WHERE rt1.destination = rt2.origin";// AND rt1.origin LIKE '%"+org+"' AND rt2.destination LIKE '%"+des+"'";
+        String example = "SELECT * from routes where routes.origin LIKE '%"+org+"%' AND routes.destination IN (SELECT routes.origin FROM routes where routes.destination LIKE '%"+ des+"%')" ;
         String routequery = "SELECT route, origin, destination FROM routes";
         //One bus
         String firstquery1 = "SELECT * FROM routes WHERE origin LIKE '%" +org+"' AND destination LIKE '%" +des+"'";
@@ -326,10 +347,11 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor cursorThird2 = db.rawQuery(thirdquery2,null);
         Cursor cursorFourth = db.rawQuery(fourthquery,null);
         Cursor cursorFifth = db.rawQuery(fifthquery,null);
+        Cursor cursorexample = db.rawQuery(example,null);
 
         // First check if there is a bus that goes from origin to destination
         if (cursorFirst1.getCount()>0 && cursorFirst1 != null) {
-
+/*
             Log.d("Tag","First");
             // looping through all rows and adding to list
             if (cursorFirst1.moveToFirst()) {
@@ -352,11 +374,11 @@ public class DBHelper extends SQLiteOpenHelper {
                 } while (cursorFirst1.moveToNext());
 
                 return routeList;
-            }
+            }*/
 
         }else if(cursorFirst2.getCount()>0 && cursorFirst2 != null){
             // looping through all rows and adding to list
-            Log.d("Tag","Second");
+           /* Log.d("Tag","Second");
             if (cursorFirst2.moveToFirst()) {
                 do {
 
@@ -377,17 +399,43 @@ public class DBHelper extends SQLiteOpenHelper {
                 } while (cursorFirst2.moveToNext());
                 return routeList;
             }
+*/
 
+        }else if (cursorexample.getCount()>0){
 
+            // looping through all rows and adding to list
+            Log.d("Tag","example");
+            if (cursorexample.moveToFirst()) {
+                do {
+
+                    FeedItem item = new FeedItem();
+                    item.setOrigin("Origin: " + cursorexample.getString(2));
+                    // Log.d("origin",""+cursor.getString(2));
+                    item.setDestination("Destination: " + cursorexample.getString(3));
+                    //Log.d("des",""+cursor.getString(3));
+                    item.setRoute("Route Number: " + cursorexample.getString(1));
+                    //Log.d("route",""+cursor.getString(1));
+                    item.setVia("Via: " + cursorexample.getString(4));
+                    // Log.d("via",""+cursor.getString(4));
+                    item.setRouteType("Route Type: " + cursorexample.getString(5));
+                    // Log.d("type",""+cursor.getString(5));
+
+                    // Adding contact to list
+                    routeList.add(item);
+                } while (cursorexample.moveToNext());
+                return routeList;
+            }
         }//Check orgin and destination seperately
         else if(cursorSecond1.getCount()>0 || cursorSecond1!=null){//check if origin is found
 
-            if (cursorThird1.getCount()>0|| cursorThird1 != null) {// check if destination id found
+          /*  if (cursorThird1.getCount()>0|| cursorThird1 != null) {// check if destination is found
 
                 //Check origin and destination assuming the user did not use any via
                 CursorJoiner joiner = new CursorJoiner(cursorSecond1, new String[]{"destination"}, cursorThird1, new String[]{"origin"});
+
                 while (joiner.hasNext()) {
                     CursorJoiner.Result result = joiner.next();
+                    Log.d("Tagzzzz", "" + "check check");
                     switch (result) {
                         case LEFT:
                             // don't care about this case
@@ -421,10 +469,13 @@ public class DBHelper extends SQLiteOpenHelper {
                             routeList.add(item);
                             routeList.add(item1);
 
-                            return routeList;
+                            Log.d("Tagzzzz", "" + item.getOrigin());
+
+
 
                     }
                 }
+
                 // if  routelist is null then  need three buses
                 if (routeList.size() == 0) {//Means that we need three buses
                //take the destination of secondquery and the orgin of thirdquery and try to find a table that as a bus that runs that route
@@ -474,12 +525,13 @@ public class DBHelper extends SQLiteOpenHelper {
                             routeList.add(item);
                             routeList.add(item1);
 
-                            return routeList;
+
 
                     }
                 }
-            }
-        }else if(cursorSecond2.getCount()>0 && cursorSecond2 !=null){
+                return routeList;
+            }*/
+        }/*else if(cursorSecond2.getCount()>0 && cursorSecond2 !=null){
 
             if (cursorThird2.getCount()>0|| cursorThird2 != null) {// check if destination id found
 
@@ -723,7 +775,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 }
             }
 
-      }else{
+      }*/else{
             Log.d("results: ","No results");
         }
         return routeList;
