@@ -18,7 +18,6 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Cache;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -47,9 +46,6 @@ public class Route extends Fragment {
 
 
 
-    private Cache cache;
-    private Cache.Entry entry = null;
-
     private static final String TAG = HomeScreen.class.getSimpleName();
 
     public View rootView;
@@ -76,6 +72,7 @@ public class Route extends Fragment {
 
         routedb = new DBHelper(getActivity());
         faActivity  = (FragmentActivity)    super.getActivity();
+
        // faActivity.requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         rootView = inflater.inflate(R.layout.listview, container,false);
 
@@ -102,8 +99,7 @@ public class Route extends Fragment {
         text.setText(ARG_STRING);
 
         try {
-            cache = AppController.getInstance().getRequestQueue().getCache();
-            AppController.getInstance().getRequestQueue().getCache().invalidate(URL_FEED, true);
+
             update();
         }catch (NullPointerException e){
             e.printStackTrace();
@@ -187,7 +183,7 @@ public class Route extends Fragment {
 
                     */
 
-                //Insert in the sqlite database what is on the server
+               //Insert in the sqlite database what is on the server
 
                 if(feedArray.length()> routedb.numberOfRows()){
 
@@ -195,17 +191,9 @@ public class Route extends Fragment {
 
                 }
 
+            }
 
 
-
-               // feedItems.add(0, item);
-
-
-
-
-
-
-                }
 
 
             List<FeedItem> temp = routedb.getAllRoutes();
@@ -213,7 +201,13 @@ public class Route extends Fragment {
                 feedItems.add(0, temp.get(i));
             }
 
-            Log.d("Tag", "" + feedItems.size());
+           /* String s [] = feedItems.get(0).getOrigin().split(":");
+            SpannableString spanString = new SpannableString(feedItems.get(0).getOrigin().split(":")[0]);
+            spanString.setSpan(new StyleSpan(Typeface.BOLD), 0, spanString.length(), 0);
+            feedItems.get(0).getOrigin().split(":")[0]= spanString.toString();
+
+            feedItems.get(0).setOrigin(spanString+ s[1]);*/
+
 
 
 
@@ -229,23 +223,7 @@ public class Route extends Fragment {
     public String getFragment(){
         return ARG_STRING;
     }
-   /* @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
 
-
-        String[] values = new String[] { "24ex  Hellshire via Marcus Garvey Drive to City", "900  Hellshire via Hagley Pk Road to Half Way Tree", "75 Greater Portmore via Gregory Park to Spanish Town",
-                "78 Christian Gardens via  Gregory Pk.Hagley Pk Road to Half Way Tree", "68  Greater Portmore via Gregory Park to Spanish Town ", "50ex Christian Gardens via  Gregory Pk.Hagley Pk Road to Half Way Tree", "75ex Christian Gardens via  Gregory Pk.Hagley Pk Road to Half Way Tree", "500 Greater Portmore via Gregory Park to Spanish Town",
-                "31 Hellshire via Hagley Pk Road to Half Way Tree", "32B Greater Portmore via Gregory Park to Spanish Town" };
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                R.settings.route,R.id.route, values);
-        setListAdapter(adapter);
-
-    }
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        // do something with the data
-    }*/
 
 
     @Override
@@ -256,40 +234,26 @@ public class Route extends Fragment {
         MenuItem item = menu.findItem(R.id.action_search);
         item.setVisible(true);
 
-        // Associate searchable configuration with the SearchView
+       // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
                 .getActionView();
         searchView.setSearchableInfo(searchManager
                 .getSearchableInfo(getActivity().getComponentName()));
 
+        searchView.setQueryHint("Enter Route#, Origin, Destination, Via or Type");
         searchView.setOnCloseListener(new SearchView.OnCloseListener(){
 
             @Override
             public boolean onClose() {
-
-
-                return true;
-            }
-        });
-        searchView.setOnCloseListener(new SearchView.OnCloseListener(){
-
-            @Override
-            public boolean onClose() {
-                return listAdapter.getOriginalfeedItems();
+                listAdapter.getOriginalfeedItems();
+                return false;
             }
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
-            public boolean onQueryTextSubmit(String s) {
-
-
-
-
-                return true;
-
-            }
+            public boolean onQueryTextSubmit(String s) {return true;}
 
             @Override
             public boolean onQueryTextChange(String newText) {
@@ -320,9 +284,6 @@ public class Route extends Fragment {
                 getActivity().finish();
                 return true;
 
-            case R.id.settings:
-
-                return true;
 
             case R.id.action_search:
 

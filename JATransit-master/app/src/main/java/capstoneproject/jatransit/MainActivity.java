@@ -14,7 +14,6 @@ import java.util.List;
 
 import capstoneproject.jatransit.FragmentHandler.HomeScreen;
 import capstoneproject.jatransit.FragmentHandler.MapsFragment;
-import capstoneproject.jatransit.FragmentHandler.Settings;
 import capstoneproject.jatransit.data.DBHelper;
 import capstoneproject.jatransit.data.FeedItem;
 
@@ -29,7 +28,7 @@ public class MainActivity extends ActionBarActivity{
 
     private MapsFragment maps;
 
-    private Settings settings;
+
     private HomeScreen home;
     public TextView text;
     public DBHelper routedb;
@@ -73,23 +72,7 @@ public class MainActivity extends ActionBarActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.exit:
-                //finish();
-                return true;
-
-            case R.id.settings:
-
-               /* settings = Settings.newInstance(1, settings.ARG_STRING);
-                FragmentManager fm9 = getSupportFragmentManager();
-                FragmentTransaction ft9 = fm9.beginTransaction();
-
-
-                if (settings.isAdded()) {
-                    ft9.show(settings);
-                } else {
-                    ft9.replace(R.id.container, settings, settings.ARG_STRING);
-                }
-
-                ft9.commit();*/
+                finish();
                 return true;
 
             case R.id.action_search:

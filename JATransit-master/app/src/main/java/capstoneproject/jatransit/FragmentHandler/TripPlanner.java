@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.gc.materialdesign.views.ButtonRectangle;
 import com.rengwuxian.materialedittext.MaterialEditText;
@@ -100,9 +99,15 @@ public class TripPlanner extends Fragment implements View.OnClickListener {
             ft5.commit();
 
             text.setText(ARG_STRING);
-        }else{
+        }else {
 
-            Toast.makeText(getActivity(),"Empty Fields",Toast.LENGTH_SHORT).show();
+            textOrigin.setText("");
+            textDestination.setText("");
+            textOrigin.setHint("Please enter an origin");
+            textDestination.setHint("Please enter a Destination");
+            textDestination.setHintTextColor(getResources().getColor(R.color.hint));
+            textOrigin.setHintTextColor(getResources().getColor(R.color.hint));
+
         }
     }
 
@@ -129,9 +134,6 @@ public class TripPlanner extends Fragment implements View.OnClickListener {
                 getActivity().finish();
                 return true;
 
-            case R.id.settings:
-
-                return true;
 
             case R.id.action_search:
 

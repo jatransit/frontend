@@ -67,10 +67,6 @@ public class AboutUs extends Fragment {
                 getActivity().finish();
                 return true;
 
-            case R.id.settings:
-
-                return true;
-
             case R.id.action_search:
 
 

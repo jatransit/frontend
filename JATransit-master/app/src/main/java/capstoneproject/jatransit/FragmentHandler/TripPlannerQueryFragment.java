@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public class TripPlannerQueryFragment extends Fragment {
     private List<FeedItem> feedItems;
     private FragmentActivity faActivity;
     private FeedItem item;
+    private TextView notfound;
 
 
     public DBHelper db;
@@ -48,6 +50,7 @@ public class TripPlannerQueryFragment extends Fragment {
         rootView = inflater.inflate(R.layout.listview, container,false);
         listView = (ListView) rootView.findViewById(R.id.listView);
 
+        notfound = (TextView) rootView.findViewById(R.id.notfound);
         Bundle bundle = getArguments();
 
         String origin = bundle.getString("origin");
@@ -66,7 +69,7 @@ public class TripPlannerQueryFragment extends Fragment {
 
 
 
-        query(origin,destine);
+        query(origin, destine);
 
 
 
@@ -86,8 +89,13 @@ public class TripPlannerQueryFragment extends Fragment {
 
             Log.d("Tag", "" + feedItems.size());
 
-
+        if(feedItems.size()>0){
             listAdapter.notifyDataSetChanged();
+        }else{
+
+            notfound.setText("No Results found :-( ");
+        }
+
 
 
     }

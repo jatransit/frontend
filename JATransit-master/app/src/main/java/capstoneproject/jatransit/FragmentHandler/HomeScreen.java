@@ -33,15 +33,16 @@ public class HomeScreen extends Fragment {
      * Initialization of all the fragments
      */
     private Nearby nearby;
-    private Settings settings;
+
     private MapsFragment map;
     private Faq faq;
-    private NFCBusTicket nfcBusTicket;
+
     private Route route;
     private AboutUs AboutUs;
     private TripPlanner tripPlanner;
-    private Payment pay;
+
     private TextView text;
+
 
     /**
      * SetUp GridView for home screen
@@ -66,6 +67,8 @@ public class HomeScreen extends Fragment {
         text = (TextView) getActivity().findViewById(R.id.title);
         text.setText("HOME");
         gridViewListener();//handles the grid view listener
+
+
 
         return rootView;
     }
@@ -93,21 +96,7 @@ public class HomeScreen extends Fragment {
                 getActivity().finish();
                 return true;
 
-            case R.id.settings:
 
-                settings = Settings.newInstance(1, settings.ARG_STRING);
-                FragmentManager fm9 = getActivity().getSupportFragmentManager();
-                FragmentTransaction ft9 = fm9.beginTransaction();
-
-
-                if (settings.isAdded()) {
-                    ft9.show(settings);
-                } else {
-                    ft9.replace(R.id.container, settings, settings.ARG_STRING);
-                }
-
-                ft9.commit();
-               return true;
 
             case R.id.action_search:
 
@@ -234,24 +223,7 @@ public class HomeScreen extends Fragment {
 
                                 break;
 
-                            case 7:
 
-                                pay =Payment.newInstance(7, pay.ARG_STRING);
-                                FragmentManager fm7 = getActivity().getSupportFragmentManager();
-                                FragmentTransaction ft7 = fm7.beginTransaction();
-
-
-                                if (pay.isAdded()) {
-                                    ft7.show(pay);
-                                } else {
-                                    ft7.replace(R.id.container, pay,pay.ARG_STRING);
-                                }
-                                ft7.addToBackStack(null);
-                                ft7.commit();
-
-
-
-                                break;
 
                         }
                     }

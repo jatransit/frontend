@@ -7,6 +7,7 @@ package capstoneproject.jatransit.Adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,6 +105,7 @@ public class FeedListAdapter extends BaseAdapter implements Filterable{
         return filter;
     }
 
+    //Getter method that handles the
     public boolean getOriginalfeedItems(){
 
         feedItems = originalfeedItems;
@@ -117,6 +119,9 @@ public class FeedListAdapter extends BaseAdapter implements Filterable{
 
     private class RouteFilter extends Filter{
 
+        /*
+        Inner class that handles the filtering of the listview
+         */
 
         @Override
         protected FilterResults performFiltering (CharSequence constraint){
@@ -128,10 +133,23 @@ public class FeedListAdapter extends BaseAdapter implements Filterable{
                 if (originalfeedItems != null && originalfeedItems.size() > 0) {
 
                     for (FeedItem a : originalfeedItems) {
-                        if (a.getRoute().contains(constraint.toString()) ||a.getOrigin().contains(constraint.toString())
-                        || a.getDestination().contains(constraint.toString())||a.getVia().contains(constraint.toString())) {
+                        if (a.getRoute().toLowerCase().contains(constraint.toString())){
+                            Log.d("Tag1", constraint.toString());
+                            filteredItems.add(a);
+                        }else if(a.getOrigin().toLowerCase().contains(constraint.toString())){
+                            Log.d("Tag2", a.getOrigin());
+                            filteredItems.add(a);
+                        }else if( a.getDestination().toLowerCase().contains(constraint.toString())){
+                            Log.d("Tag3", constraint.toString());
+                            filteredItems.add(a);
+                        }else if(a.getVia().toLowerCase().contains(constraint.toString())) {
+                            Log.d("Tag4", constraint.toString());
+                            filteredItems.add(a);
+                        }else if(a.getRoutetype().toLowerCase().contains(constraint.toString())){
                             filteredItems.add(a);
                         }
+
+
                     }
                     results.values = filteredItems;
                 }

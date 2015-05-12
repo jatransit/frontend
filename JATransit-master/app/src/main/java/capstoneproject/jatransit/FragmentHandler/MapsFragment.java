@@ -52,8 +52,8 @@ public class MapsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater,  ViewGroup container,Bundle savedInstanceState) {
 
-        setHasOptionsMenu(true);
         super.onCreateView(inflater, container, savedInstanceState);
+        setHasOptionsMenu(true);
         rootView = inflater.inflate(R.layout.activity_maps,container,false);
         mapView = (MapView) rootView.findViewById(R.id.mapview);
 
@@ -284,10 +284,6 @@ public class MapsFragment extends Fragment {
         switch (item.getItemId()){
             case R.id.exit:
                 getActivity().finish();
-                return true;
-
-            case R.id.settings:
-
                 return true;
 
             case R.id.action_search:

@@ -5,4 +5,5 @@
     <color name="feed_item_bg">#ffffff</color>
     <color name="feed_item_border">#c2c3c8</color>
     <color name="timestamp">#0a80d1</color>
+    <color name = "hint">#990000</color>
 </resources>

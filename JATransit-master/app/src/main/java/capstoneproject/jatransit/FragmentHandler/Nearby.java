@@ -1,11 +1,13 @@
 package capstoneproject.jatransit.FragmentHandler;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -93,6 +95,8 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
             e.printStackTrace();
         }
 
+        refresh();
+
         return rootView;
 
     }
@@ -152,55 +156,9 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
 
 
 
- /*   @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-
-        String[] values = new String[] { "24ex  Hellshire via Marcus Garvey Drive to City", "900  Hellshire via Hagley Pk Road to Half Way Tree", "75 Greater Portmore via Gregory Park to Spanish Town",
-                "78 Christian Gardens via  Gregory Pk.Hagley Pk Road to Half Way Tree", "68  Greater Portmore via Gregory Park to Spanish Town ", "50ex Christian Gardens via  Gregory Pk.Hagley Pk Road to Half Way Tree", "75ex Christian Gardens via  Gregory Pk.Hagley Pk Road to Half Way Tree", "500 Greater Portmore via Gregory Park to Spanish Town",
-                "31 Hellshire via Hagley Pk Road to Half Way Tree", "32B Greater Portmore via Gregory Park to Spanish Town" };
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                R.settings.nearby,R.id.route, values);
-        setListAdapter(adapter);
-
-    }*/
-    public static Nearby newInstance(int someInt, String s) {
-
-       Nearby nfragment = new Nearby();
-        Bundle args = new Bundle();
-        args.putInt("Nearby", someInt);
-        nfragment.setArguments(args);
-        return nfragment;
-    }
 
 
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-        MapsFragment map = MapsFragment.newInstance(1,MapsFragment.ARG_STRING);
-        FragmentManager fm3 = getActivity().getSupportFragmentManager();
-        FragmentTransaction ft3 = fm3.beginTransaction();
-
-        NearbyInfo info = NearbyInfo.newInstance(1, NearbyInfo.ARG_STRING);
-        FragmentManager fm4 = getActivity().getSupportFragmentManager();
-        FragmentTransaction ft4 =  fm4.beginTransaction();
-
-
-        if (info.isAdded()){//(map.isAdded()) {
-           // ft3.show(map);
-            ft4.show(info);
-        } else {
-           // ft3.replace(R.id.container, map, map.ARG_STRING);
-            ft4.replace(R.id.container, info, info.ARG_STRING);
-        }
-       // ft3.addToBackStack(null);
-            ft4.addToBackStack(null);
-            ft4.commit();
-        //ft3.commit();
-
-    }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.main_menu, menu);
@@ -224,10 +182,6 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
                 getActivity().finish();
                 return true;
 
-            case R.id.settings:
-
-                return true;
-
             case R.id.action_search:
 
 
@@ -236,5 +190,98 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+       FeedItem item = feedItems.get(position);
+
+        Bundle bundle = new Bundle();
+        bundle.putString("route", item.getRoute());
+        bundle.putString("origin", item.getOrigin());
+        bundle.putString("destination",item.getDestination());
+        bundle.putString("location","current Location");
+        bundle.putString("distance","3km");
+        bundle.putString("time","15min");
+
+
+        NearbyInfo info = NearbyInfo.newInstance(1, NearbyInfo.ARG_STRING);
+        info.setArguments(bundle);
+        FragmentManager fm4 = getActivity().getSupportFragmentManager();
+        FragmentTransaction ft4 =  fm4.beginTransaction();
+
+
+        if (info.isAdded()){
+
+            ft4.show(info);
+        } else {
+
+            ft4.replace(R.id.container, info, info.ARG_STRING);
+        }
+
+        ft4.addToBackStack(null);
+        ft4.commit();
+
+
+    }
+
+
+    /**
+     * The refresh function
+     */
+    private void refresh() {
+
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.container);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+
+            @Override
+            public void onRefresh() {
+                feedItems = new ArrayList<FeedItem>();
+
+                update();
+
+                listAdapter = new FeedListAdapter(getActivity(), feedItems);
+                listView.setAdapter(listAdapter);
+
+
+                Log.d(TAG, "onRefresh SwipeRefreshLayout");
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        stopSwipeRefresh();
+
+
+                    }
+                }, REFRESH_TIME_IN_SECONDS * 1000);
+            }
+
+            private void stopSwipeRefresh() {
+                swipeRefreshLayout.setRefreshing(false);
+            }
+
+        });
+
+        swipeRefreshLayout.setColorScheme(android.R.color.black,
+                android.R.color.holo_red_light, android.R.color.holo_green_light,
+                android.R.color.holo_green_light);
+
+
+
+
+
+    }
+
+
+
+
+    public static Nearby newInstance(int someInt, String s) {
+
+        Nearby nfragment = new Nearby();
+        Bundle args = new Bundle();
+        args.putInt("Nearby", someInt);
+        nfragment.setArguments(args);
+        return nfragment;
     }
 }
