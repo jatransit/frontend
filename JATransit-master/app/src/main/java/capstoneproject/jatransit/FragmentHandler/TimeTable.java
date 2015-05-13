@@ -44,10 +44,10 @@ public class TimeTable extends Fragment {
 
     private void initialiseImage(String s) {
 
-        String imgname = "route"+ s.split(": ")[1].toLowerCase();
+        String imgname = "route"+ s.split(": ")[1].toLowerCase() + ".png";
 
         SubsamplingScaleImageView imageView = (SubsamplingScaleImageView)rootView.findViewById(R.id.imageView);
-        imageView.setImage(ImageSource.resource(R.drawable.route3));
+        imageView.setImage(ImageSource.asset(imgname));
     }
 
     public static TimeTable newInstance(int someInt, String s) {

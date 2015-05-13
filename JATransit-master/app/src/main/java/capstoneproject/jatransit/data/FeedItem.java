@@ -11,10 +11,19 @@ public class FeedItem {
     private String destination;
     private String routetype;
 
+    private String latitude;
+    private String longitude;
+    private String velocity;
 
+    private String distance;
 
     private String timeStamp;
-    public FeedItem(String route, String origin, String via,String destination,String routetype,String timeStamp){
+
+
+
+    private String currentlocation;
+
+    public FeedItem(String route, String origin, String via,String destination,String routetype,String timeStamp, String distance){
 
         super();
         this.route = route;
@@ -23,11 +32,37 @@ public class FeedItem {
         this.destination = destination;
         this.routetype=routetype;
         this.timeStamp = timeStamp;
+        this.distance = distance;
 
     }
     public FeedItem(){
 
     }
+
+    public String getVelocity() {
+        return velocity;
+    }
+
+    public void setVelocity(String velocity) {
+        this.velocity = velocity;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
     public void setRouteType(String routetype){
         this.routetype=routetype;
     }
@@ -81,8 +116,20 @@ public class FeedItem {
         this.timeStamp = timeStamp;
     }
 
+    public String getDistance() {
+        return distance;
+    }
 
+    public void setDistance(String distance) {
+        this.distance = distance;
+    }
+    public String getCurrentlocation() {
+        return currentlocation;
+    }
 
+    public void setCurrentlocation(String currentlocation) {
+        this.currentlocation = currentlocation;
+    }
 
 
 

@@ -23,7 +23,7 @@ import capstoneproject.jatransit.FragmentHandler.Route;
 import capstoneproject.jatransit.R;
 import capstoneproject.jatransit.data.FeedItem;
 
-public class FeedListAdapter extends BaseAdapter implements Filterable{
+public class FeedListAdapter2 extends BaseAdapter implements Filterable{
 
     private Activity activity;
     private LayoutInflater inflater;
@@ -33,12 +33,12 @@ public class FeedListAdapter extends BaseAdapter implements Filterable{
     private List<FeedItem> originalfeedItems;
     private Calculations cal;
 
-    public FeedListAdapter(Activity activity, List<FeedItem> feedItems) {
+    public FeedListAdapter2(Activity activity, List<FeedItem> feedItems) {
         this.activity = activity;
         this.feedItems = feedItems;
         this.originalfeedItems = feedItems;
 
-       getFilter();
+        getFilter();
     }
 
     @Override
@@ -63,13 +63,13 @@ public class FeedListAdapter extends BaseAdapter implements Filterable{
             inflater = (LayoutInflater) activity
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         if (convertView == null)
-            convertView = inflater.inflate(R.layout.route, null);
+            convertView = inflater.inflate(R.layout.nearby, null);
 
         TextView route = (TextView) convertView.findViewById(R.id.route);
         TextView origin = (TextView) convertView.findViewById(R.id.org);
-        TextView via = (TextView) convertView.findViewById(R.id.via);
+
         TextView des = (TextView) convertView.findViewById(R.id.des);
-        TextView routetype = (TextView)convertView.findViewById(R.id.routetype);
+
         TextView currentLocation = (TextView)convertView.findViewById(R.id.currentlocation);
         TextView distance = (TextView)convertView.findViewById(R.id.distance);
         TextView timestamp = (TextView) convertView.findViewById(R.id.timestamp);
@@ -78,10 +78,14 @@ public class FeedListAdapter extends BaseAdapter implements Filterable{
 
         route.setText(item.getRoute());
         origin.setText(item.getOrigin());
-        via.setText(item.getVia());
-        des.setText(item.getDestination());
-        routetype.setText(item.getRoutetype());
 
+        des.setText(item.getDestination());
+
+            String s = item.getDistance();
+            Log.d("Distance",s);
+            distance.setText(s);
+            timestamp.setText(item.getTimeStamp());
+            currentLocation.setText(item.getCurrentlocation());
 
 
 
@@ -166,7 +170,7 @@ public class FeedListAdapter extends BaseAdapter implements Filterable{
 
             }
             return results;
-         }
+        }
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {

@@ -3,12 +3,17 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
    >
 
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Click to View Details"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/progress">
+        android:id="@+id/progress"
+        android:orientation="vertical">
+
         <ProgressBar
             android:id="@+id/pbHeaderProgress"
             android:layout_width="wrap_content"

@@ -33,7 +33,8 @@ public class HomeScreen extends Fragment {
      */
     private Nearby nearby;
 
-    private MapsFragment map;
+    //private MapsFragment map;
+    Currentmap map1;
     private Faq faq;
 
     private Route route;
@@ -170,15 +171,17 @@ public class HomeScreen extends Fragment {
 
                                 break;
                             case 3:
-                                map = MapsFragment.newInstance(3, map.ARG_STRING);
+
+
+                                map1 = Currentmap.newInstance(3, map1.ARG_STRING);
                                 FragmentManager fm3 = getActivity().getSupportFragmentManager();
                                 FragmentTransaction ft3 = fm3.beginTransaction();
 
 
-                                if (map.isAdded()) {
-                                    ft3.show(map);
+                                if (map1.isAdded()) {
+                                    ft3.show(map1);
                                 } else {
-                                    ft3.replace(R.id.container, map, map.ARG_STRING);
+                                    ft3.replace(R.id.container, map1, map1.ARG_STRING);
                                 }
                                 ft3.addToBackStack(null);
                                 ft3.commit();

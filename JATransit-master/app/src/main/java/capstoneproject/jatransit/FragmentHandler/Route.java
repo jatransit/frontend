@@ -303,10 +303,10 @@ public class Route extends Fragment implements AdapterView.OnItemClickListener {
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        FeedItem item = feedItems.get(position);
+        FeedItem f = (FeedItem)parent.getAdapter().getItem(position);
 
         Bundle bundle = new Bundle();
-        bundle.putString("route", item.getRoute());
+        bundle.putString("route", f.getRoute());
 
         timetable = TimeTable.newInstance(1,timetable.ARG_STRING);
         timetable.setArguments(bundle);

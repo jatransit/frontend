@@ -1,5 +1,10 @@
 package capstoneproject.jatransit.FragmentHandler;
 
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -28,10 +33,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-import capstoneproject.jatransit.Adapter.FeedListAdapter;
+import capstoneproject.jatransit.Adapter.FeedListAdapter2;
 import capstoneproject.jatransit.R;
 import capstoneproject.jatransit.app.AppController;
 import capstoneproject.jatransit.data.FeedItem;
@@ -54,14 +61,15 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
 
     public View rootView;
     private ListView listView;
-    private FeedListAdapter listAdapter;
+    private FeedListAdapter2 listAdapter;
 
     private List<FeedItem> feedItems;
     private FragmentActivity faActivity;
     private String status;
     private TextView text;
+    private TextView emptylist;
 
-    private String URL_FEED = "http://test123calil.co.nf/monaspot/jatransit.php";
+    private String URL_FEED = "http://jatransit.appspot.com/live";
 
 
     @Override
@@ -74,19 +82,24 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
         listView = (ListView) rootView.findViewById(R.id.listView);
         feedItems = new ArrayList<FeedItem>();
 
-        listAdapter = new FeedListAdapter(faActivity , feedItems);
+        listAdapter = new FeedListAdapter2(faActivity , feedItems);
         listView.setAdapter(listAdapter);
 
         listView.setOnItemClickListener(this);
 
-        rootView.setVisibility(android.view.View.VISIBLE);
+        emptylist = (TextView)rootView.findViewById(R.id.message);
+        emptylist.setText("Internet Access is Needed to View live Bus Feed");
+
+        listView.setVisibility((listAdapter.isEmpty()) ? View.GONE : View.VISIBLE);
+
+        //rootView.setVisibility(android.view.View.VISIBLE);
 
         text = new TextView(getActivity());
         text = (TextView) getActivity().findViewById(R.id.title);
         text.setText(ARG_STRING);
 
         try {
-
+            Log.d("latitude","nothing");
             update();
         }catch (NullPointerException e){
             e.printStackTrace();
@@ -94,9 +107,13 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
 
         refresh();
 
+
+
         return rootView;
 
     }
+
+
 
     public void update() {
 
@@ -106,6 +123,9 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
             @Override
             public void onResponse(JSONObject response) {
                 VolleyLog.d(TAG, "Response: " + response.toString());
+
+
+
                 if (response != null) {
                     parseJsonFeed(response);
                 }
@@ -128,20 +148,52 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
     private void parseJsonFeed(JSONObject response) {
 
         try {
-            JSONArray feedArray = response.getJSONArray("route");
+            JSONArray feedArray = response.getJSONArray("trackedBus");
+
 
             for (int i = 0; i < feedArray.length(); i++) {
                 JSONObject feedObj = (JSONObject) feedArray.get(i);
                 FeedItem item = new FeedItem();
-                item.setRoute(feedObj.getString("route"));
+                item.setRoute("Route Number: " + feedObj.getString("route_id"));
 
-                item.setOrigin(feedObj.getString("origin"));
-                item.setVia(feedObj.getString("via"));
-                item.setDestination(feedObj.getString("destination"));
-               // item.setRouteType(feedObj.getString("route_type"));
-                item.setTimeStamp(feedObj.getString("timeStamp"));
+                item.setOrigin("Origin: " + feedObj.getString("origin"));
+                item.setVia("Via: " + feedObj.getString("via"));
+                item.setDestination("Destination: " + feedObj.getString("destination"));
 
-                feedItems.add(0,item);
+               // Log.d("route", feedObj.getString("route_id"));
+                item.setVelocity(feedObj.getString("velocity"));
+                //Log.d("velocity", feedObj.getString("velocity"));
+                item.setLongitude(feedObj.getString("long"));
+                //Log.d("long", feedObj.getString("long"));
+                item.setLongitude(feedObj.getString("lat"));
+               // Log.d("lat", feedObj.getString("lat"));
+
+
+
+                //Calculate the currentlocation, distance and timestamp
+
+                Location buslocation = new Location("");
+                buslocation.setLatitude(Double.parseDouble(feedObj.getString("lat")));
+                buslocation.setLongitude(Double.parseDouble(feedObj.getString("long")));
+
+                LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+                Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                //Log.d("buslocation",""+ location.getLatitude());
+                double  c = location.distanceTo(buslocation);
+
+                item.setDistance( "Distance: " + (int)(c/1000)+"km");
+
+                //Log.d("distance", "" + c);
+                double time = c/(Double.parseDouble(feedObj.getString("velocity"))*0.277778);
+
+                item.setTimeStamp("Estimated Time: " + (int) time / 60 + "min");
+
+                item.setCurrentlocation("Current Location: "+getAddress(Double.parseDouble(feedObj.getString("lat")), Double.parseDouble(feedObj.getString("long"))));
+
+                //Log.d("timestamp", "" + time);
+
+                feedItems.add(0, item);
 
             }
 
@@ -149,6 +201,8 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+
     }
 
 
@@ -197,10 +251,9 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
         Bundle bundle = new Bundle();
         bundle.putString("route", item.getRoute());
         bundle.putString("origin", item.getOrigin());
-        bundle.putString("destination",item.getDestination());
-        bundle.putString("location","current Location");
-        bundle.putString("distance","3km");
-        bundle.putString("time","15min");
+        bundle.putString("destination", item.getCurrentlocation());
+        bundle.putString("distance",item.getDistance());
+        bundle.putString("time",item.getTimeStamp());
 
 
         NearbyInfo info = NearbyInfo.newInstance(1, NearbyInfo.ARG_STRING);
@@ -239,7 +292,7 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
 
                 update();
 
-                listAdapter = new FeedListAdapter(getActivity(), feedItems);
+                listAdapter = new FeedListAdapter2(getActivity(), feedItems);
                 listView.setAdapter(listAdapter);
 
 
@@ -270,7 +323,29 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
 
     }
 
+    public String getAddress(double lat, double lng) {
 
+        String add ="";
+        Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(lat, lng, 1);
+            Address obj = addresses.get(0);
+
+            add = obj.getFeatureName();
+
+            Log.v("IGA", "Address" + add);
+            return add;
+            // Toast.makeText(this, "Address=>" + add,
+            // Toast.LENGTH_SHORT).show();
+
+            // TennisAppActivity.showDialog(add);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+
+        }
+        return add;
+    }
 
 
     public static Nearby newInstance(int someInt, String s) {
