@@ -88,11 +88,11 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
         listView.setOnItemClickListener(this);
 
         emptylist = (TextView)rootView.findViewById(R.id.message);
-        emptylist.setText("Internet Access is Needed to View live Bus Feed");
+        //emptylist.setText("Internet Access is Needed to View live Bus Feed");
 
-        listView.setVisibility((listAdapter.isEmpty()) ? View.GONE : View.VISIBLE);
+        //listView.setVisibility((listAdapter.isEmpty()) ? View.GONE : View.VISIBLE);
 
-        //rootView.setVisibility(android.view.View.VISIBLE);
+        rootView.setVisibility(android.view.View.VISIBLE);
 
         text = new TextView(getActivity());
         text = (TextView) getActivity().findViewById(R.id.title);
@@ -182,12 +182,12 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
                 //Log.d("buslocation",""+ location.getLatitude());
                 double  c = location.distanceTo(buslocation);
 
-                item.setDistance( "Distance: " + (int)(c/1000)+"km");
+                item.setDistance( "~ Distance: " + (int)(c/1000)+"km");
 
                 //Log.d("distance", "" + c);
                 double time = c/(Double.parseDouble(feedObj.getString("velocity"))*0.277778);
 
-                item.setTimeStamp("Estimated Time: " + (int) time / 60 + "min");
+                item.setTimeStamp("Arrival Time: " + (int) time / 60 + "min");
 
                 item.setCurrentlocation("Current Location: "+getAddress(Double.parseDouble(feedObj.getString("lat")), Double.parseDouble(feedObj.getString("long"))));
 
@@ -198,6 +198,7 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
             }
 
             listAdapter.notifyDataSetChanged();
+            rootView.findViewById(R.id.pbHeaderProgress).setVisibility(View.GONE);
         } catch (JSONException e) {
             e.printStackTrace();
         }

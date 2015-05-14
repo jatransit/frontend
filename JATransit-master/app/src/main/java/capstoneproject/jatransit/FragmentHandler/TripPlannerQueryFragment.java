@@ -71,7 +71,7 @@ public class TripPlannerQueryFragment extends Fragment {
 
         query(origin, destine);
 
-
+        rootView.findViewById(R.id.pbHeaderProgress).setVisibility(View.GONE);
 
 
         return rootView;

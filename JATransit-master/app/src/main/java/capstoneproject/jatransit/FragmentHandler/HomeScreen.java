@@ -66,7 +66,7 @@ public class HomeScreen extends Fragment {
 
         text = new TextView(getActivity());
         text = (TextView) getActivity().findViewById(R.id.title);
-        text.setText("HOME");
+        text.setText("JATransit");
         gridViewListener();//handles the grid view listener
 
 

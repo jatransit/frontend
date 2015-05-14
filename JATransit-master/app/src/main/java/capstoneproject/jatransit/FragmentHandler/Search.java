@@ -1,9 +1,9 @@
 package capstoneproject.jatransit.FragmentHandler;
 
-import android.support.v4.app.Fragment;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -101,7 +101,7 @@ public class Search extends Fragment{
         text = (TextView) getActivity().findViewById(R.id.title);
         text.setText(ARG_STRING);
 
-
+        rootView.findViewById(R.id.pbHeaderProgress).setVisibility(View.GONE);
 
         return rootView;
 
@@ -252,6 +252,9 @@ public class Search extends Fragment{
             DBHelper db = new DBHelper(getActivity());
             @Override
             public boolean onQueryTextSubmit(String s) {
+
+                rootView.findViewById(R.id.pbHeaderProgress).setVisibility(View.VISIBLE);
+                message.setText("");
                 feedItems.clear();
                 List<FeedItem> temp = db.getDataByRoute(s);
                 for(int i = 0;i< temp.size(); i++) {
@@ -262,6 +265,7 @@ public class Search extends Fragment{
                     message.setText("");
                 }
                 listAdapter.notifyDataSetChanged();
+                rootView.findViewById(R.id.pbHeaderProgress).setVisibility(View.GONE);
                 return true;
             }
 

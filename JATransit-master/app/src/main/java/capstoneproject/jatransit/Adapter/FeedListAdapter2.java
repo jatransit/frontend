@@ -79,7 +79,7 @@ public class FeedListAdapter2 extends BaseAdapter implements Filterable{
         route.setText(item.getRoute());
         origin.setText(item.getOrigin());
 
-        des.setText(item.getDestination());
+           des.setText(item.getDestination());
 
             String s = item.getDistance();
             Log.d("Distance",s);

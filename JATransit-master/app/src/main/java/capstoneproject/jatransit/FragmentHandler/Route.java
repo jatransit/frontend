@@ -218,7 +218,7 @@ public class Route extends Fragment implements AdapterView.OnItemClickListener {
 
             listAdapter.notifyDataSetChanged();
 
-            rootView.findViewById(R.id.progress).setVisibility(View.GONE);
+            rootView.findViewById(R.id.pbHeaderProgress).setVisibility(View.GONE);
 
         } catch (JSONException e) {
             e.printStackTrace();

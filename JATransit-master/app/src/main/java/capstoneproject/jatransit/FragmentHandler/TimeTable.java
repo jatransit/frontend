@@ -22,13 +22,14 @@ public class TimeTable extends Fragment {
     private View rootView;
     private ImageView hellshire;
     private TextView text;
+    private TextView message;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.timetable, container, false);
 
-
+        message = (TextView)rootView.findViewById(R.id.message);
         text = new TextView(getActivity());
         text = (TextView) getActivity().findViewById(R.id.title);
         text.setText(ARG_STRING);
@@ -44,10 +45,16 @@ public class TimeTable extends Fragment {
 
     private void initialiseImage(String s) {
 
-        String imgname = "route"+ s.split(": ")[1].toLowerCase() + ".png";
+        try {
+            String imgname = "route" + s.split(": ")[1].toLowerCase() + ".png";
 
-        SubsamplingScaleImageView imageView = (SubsamplingScaleImageView)rootView.findViewById(R.id.imageView);
-        imageView.setImage(ImageSource.asset(imgname));
+            SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) rootView.findViewById(R.id.imageView);
+            imageView.setImage(ImageSource.asset(imgname));
+        }catch (Exception e){
+
+            message.setText("No timetable Done for Demo");
+
+        }
     }
 
     public static TimeTable newInstance(int someInt, String s) {

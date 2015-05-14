@@ -7,4 +7,5 @@
     <color name="timestamp">#0a80d1</color>
     <color name = "hint">#990000</color>
     <color name="quicksearch">#00cc00</color>
+    <color name="help">#D4AF37</color>
 </resources>
