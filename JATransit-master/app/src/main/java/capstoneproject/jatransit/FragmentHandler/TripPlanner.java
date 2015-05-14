@@ -23,7 +23,7 @@ import capstoneproject.jatransit.R;
  */
 public class TripPlanner extends Fragment implements View.OnClickListener {
 
-    public static final String ARG_STRING = "TripPlanner";
+    public static final String ARG_STRING = "Trip Planner";
     private static final String TAG = HomeScreen.class.getSimpleName();
 
     private String URL_FEED ="http://jatransit.appspot.com/routes";

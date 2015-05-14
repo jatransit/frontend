@@ -26,6 +26,13 @@ public class Faq extends Fragment {
     private TextView answer2;
     private TextView question3;
     private TextView answer3;
+    private TextView question4;
+    private TextView answer4;
+    private TextView question5;
+    private TextView answer5;
+    private TextView question6;
+    private TextView answer6;
+
     private TextView text;
 
 
@@ -44,6 +51,12 @@ public class Faq extends Fragment {
         question3 = (TextView)rootView.findViewById(R.id.question3);
         answer3 = (TextView)rootView.findViewById(R.id.answer3);
 
+        question4 = (TextView)rootView.findViewById(R.id.question4);
+        answer4 = (TextView)rootView.findViewById(R.id.answer4);
+        question5 = (TextView)rootView.findViewById(R.id.question5);
+        answer5 = (TextView)rootView.findViewById(R.id.answer5);
+        question6 = (TextView)rootView.findViewById(R.id.question6);
+        answer6 = (TextView)rootView.findViewById(R.id.answer6);
 
         text = new TextView(getActivity());
         text = (TextView) getActivity().findViewById(R.id.title);
@@ -58,8 +71,9 @@ public class Faq extends Fragment {
         String [] answers = getActivity().getResources().getStringArray(R.array.answers);
 
 
-            question1.setText(questions[0]);
-            answer1.setText(answers[0]);
+
+        question1.setText(questions[0]);
+        answer1.setText(answers[0]);
 
         question2.setText(questions[1]);
         answer2.setText(answers[1]);
@@ -67,6 +81,14 @@ public class Faq extends Fragment {
         question3.setText(questions[2]);
         answer3.setText(answers[2]);
 
+        question4.setText(questions[3]);
+        answer4.setText(answers[3]);
+
+        question5.setText(questions[4]);
+        answer5.setText(answers[4]);
+
+        question6.setText(questions[5]);
+        answer6.setText(answers[5]);
 
     }
 

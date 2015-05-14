@@ -160,9 +160,15 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
     public int numberOfRows(){
-        SQLiteDatabase db = this.getReadableDatabase();
-        int numRows = (int) DatabaseUtils.queryNumEntries(db, ROUTES_TABLE_NAME);
-        return numRows;
+        try {
+            SQLiteDatabase db = this.getReadableDatabase();
+            int numRows = (int) DatabaseUtils.queryNumEntries(db, ROUTES_TABLE_NAME);
+            return numRows;
+        }catch(Exception e){
+            e.printStackTrace();
+
+        }
+        return 99999;
     }
 
     public boolean updateRoute (Integer id,String route, String origin, String destination, String via, String route_type)
@@ -548,8 +554,15 @@ public class DBHelper extends SQLiteOpenHelper {
                 }
                     // Adding contact to list
                     //routeList.add(item);
+
+
+                    if (!cursorexample2.moveToNext()) {
+                        cursorexample2.moveToFirst();
+                        end = cursorexample1.moveToNext();
+
+                    }
                     try {
-                        if (cursorexample1.getString(3).equals(cursorexample2.getString(2))) {
+                        if (cursorexample1.getString(3).equals(cursorexample2.getString(2)) || cursorexample1.getString(2).equals(cursorexample2.getString(2))|| cursorexample1.getString(3).equals(cursorexample2.getString(3))|| cursorexample1.getString(2).equals(cursorexample2.getString(3))) {
                             routeList.add(0, item);
                             routeList.add(0, item1);
 
@@ -558,13 +571,6 @@ public class DBHelper extends SQLiteOpenHelper {
                     }catch (Exception e){
                         e.printStackTrace();
                     }
-
-                    if (!cursorexample2.moveToNext()) {
-                        cursorexample2.moveToFirst();
-                        end = cursorexample1.moveToNext();
-
-                    }
-
 
                 } while (end);
                 return routeList;

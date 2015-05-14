@@ -4,7 +4,6 @@ package capstoneproject.jatransit.FragmentHandler;
  * Created by Caliph Cole on 05/12/2015.
  */
 
-import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.graphics.Color;
 import android.location.Location;
@@ -12,8 +11,10 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -50,7 +52,7 @@ public class Currentmap extends Fragment implements OnMapReadyCallback {
 
     public static final String ARG_STRING= "Map";
 
-    View rootView;
+    static View rootView;
     private MapFragment mapFragment;
     final String TAG = "JaTransit";
     final String mapType = "JA";
@@ -58,19 +60,37 @@ public class Currentmap extends Fragment implements OnMapReadyCallback {
     DecimalFormat df = new DecimalFormat("#.##");
     LocationManager locationManager;
     private TextView text;
+    private FloatingActionButton button;
 
     MarkerOptions mOption;
     Random rand = new Random();
 
-    ArrayList<ArrayList> routeList = new ArrayList<>();
-    ArrayList<TrackedBus> buses = new ArrayList<>();
+    private ArrayList<ArrayList> routeList = new ArrayList<>();
+    private ArrayList<TrackedBus> buses = new ArrayList<>();
     Timer timer;
     @Override
     public View onCreateView(LayoutInflater inflater,  ViewGroup container,Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         setHasOptionsMenu(true);
-        rootView = inflater.inflate(R.layout.activity_maps,container,false);
 
+
+
+            if (rootView != null) {
+                ViewGroup parent = (ViewGroup) rootView.getParent();
+                if (parent != null)
+                    parent.removeView(rootView);
+            }
+            try {
+
+            rootView = inflater.inflate(R.layout.activity_maps, container, false);
+
+
+            } catch (InflateException e) {
+    /* map is already there, just return view as it is */
+            }
+            final Button button = (Button)rootView.findViewById(R.id.find_closest);
+
+        getActivity().findViewById(R.id.help).setVisibility(View.GONE);
         locationManager = (LocationManager)
                 getActivity().getSystemService(Context.LOCATION_SERVICE);
 
@@ -78,7 +98,7 @@ public class Currentmap extends Fragment implements OnMapReadyCallback {
         locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
 
-        final Button button = (Button)rootView.findViewById(R.id.find_closest);
+
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
@@ -89,11 +109,10 @@ public class Currentmap extends Fragment implements OnMapReadyCallback {
         mapFragment = (MapFragment) getActivity().getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
+//
         text = new TextView(getActivity());
         text = (TextView) getActivity().findViewById(R.id.title);
         text.setText(ARG_STRING);
-
         return rootView;
     }
 
@@ -129,7 +148,7 @@ public class Currentmap extends Fragment implements OnMapReadyCallback {
                     {
                         found = true;
                         bus.setVelocity(Double.parseDouble(velocity));
-                        bus.getMarker().setTitle("Speed: " + df.format(bus.getVelocity()) + "km/h");
+                        bus.getMarker().setTitle("Route#: " + route_id);
                         bus.setCurrentLocation(location);
                         bus.getMarker().setPosition(location);
                     }
@@ -140,7 +159,7 @@ public class Currentmap extends Fragment implements OnMapReadyCallback {
                     Marker m = mapFragment.getMap().addMarker( mOption.position(location).icon(BitmapDescriptorFactory.fromResource(R.drawable.bus_marker)).anchor((float)0.5,(float)0.5));
                     TrackedBus b = new TrackedBus(bus_id,m,0,location);
                     b.setVelocity(Double.parseDouble(velocity));
-                    b.getMarker().setTitle("Speed: " + df.format(b.getVelocity()) + "km/h");
+                    b.getMarker().setTitle("Route#: " + route_id);
                     buses.add(b);
                 }
             }

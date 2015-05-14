@@ -24,6 +24,9 @@
         <item>1. What does the Acronym JUTC mean?</item>
         <item>2. What is the JUTC SMART CARD?</item>
         <item>3. What is the size and “make up” of the JUTC fleet?</item>
+        <item>4. Who designed the JATransit Application? </item>
+        <item>5. How much does the JATransit Application cost?  </item>
+        <item>6. Where does the JATransit Application work?</item>
     </string-array>
 
     <string-array name="answers">
@@ -33,6 +36,31 @@
               card is reusable and rechargeable and should not be thrown away – similar to a credit card.</item>
         <item>The fleet size is now approximately 460 buses and including the artic, bi-artic, buses for
             the handicapped and luxury coaches. The most common make in the fleet is Volvo.</item>
+        <item>The JATransit app was designed by 5 Students from the Department of Computing at the UWI,
+            Mona. Namely: Anthony Scott, Caliph Cole, Percival Reid, Antoinette Todd and Hertbert McNeil</item>
+        <item>The JATransit application is completely free to everyone with an Android Smartphone.</item>
+        <item>The JATransit application is intended to work in the areas of Jamaica served by scheduled JUTC bus service.</item>
     </string-array>
 
+    <string-array name="icon">
+        <item>Nearby Icon</item>
+        <item>Route Icon</item>
+        <item>Trip Icon</item>
+        <item>Map</item>
+        <item>Search</item>
+
+    </string-array>
+    <string-array name="details">
+        <item> Click to see all the buses near you based on your current location.
+List items are clickable.
+</item>
+        <item>Click here to see all the routes and can search bus routes based on
+            route number, origin or destination. List items are clickable, click to view static timetable
+Static Time Table - Pinch out to zoom out to see the timetable for your route</item>
+        <item> Click here to get all the bus routes for your trip based on the origin and destination.</item>
+        <item>Click here to see all the buses around you  based on your current location.</item>
+        <item>Click here to complete a quick search of a route.</item>
+
+
+    </string-array>
 </resources>

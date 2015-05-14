@@ -60,6 +60,7 @@ public class HomeScreen extends Fragment {
                 false);
         setHasOptionsMenu(true);
 
+        getActivity().findViewById(R.id.help).setVisibility(View.VISIBLE);
 
         ((GridView) rootView.findViewById(R.id.option))
                 .setAdapter(new ImageAdapter(getActivity()));
@@ -173,18 +174,19 @@ public class HomeScreen extends Fragment {
                             case 3:
 
 
-                                map1 = Currentmap.newInstance(3, map1.ARG_STRING);
-                                FragmentManager fm3 = getActivity().getSupportFragmentManager();
-                                FragmentTransaction ft3 = fm3.beginTransaction();
+                                    map1 = Currentmap.newInstance(3, map1.ARG_STRING);
+                                    FragmentManager fm3 = getActivity().getSupportFragmentManager();
+                                    FragmentTransaction ft3 = fm3.beginTransaction();
 
 
-                                if (map1.isAdded()) {
-                                    ft3.show(map1);
-                                } else {
-                                    ft3.replace(R.id.container, map1, map1.ARG_STRING);
-                                }
-                                ft3.addToBackStack(null);
-                                ft3.commit();
+                                    if (map1.isAdded()) {
+                                        ft3.show(map1);
+                                    } else {
+                                        ft3.replace(R.id.container, map1, map1.ARG_STRING);
+                                    }
+                                    ft3.addToBackStack(null);
+                                    ft3.commit();
+
 
                                 break;
                             case 4:

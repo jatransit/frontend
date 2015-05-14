@@ -35,6 +35,8 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -84,6 +86,7 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
 
         listAdapter = new FeedListAdapter2(faActivity , feedItems);
         listView.setAdapter(listAdapter);
+
 
         listView.setOnItemClickListener(this);
 
@@ -189,13 +192,15 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
 
                 item.setTimeStamp("Arrival Time: " + (int) time / 60 + "min");
 
-                item.setCurrentlocation("Current Location: "+getAddress(Double.parseDouble(feedObj.getString("lat")), Double.parseDouble(feedObj.getString("long"))));
+                item.setCurrentlocation("Current Location: " + getAddress(Double.parseDouble(feedObj.getString("lat")), Double.parseDouble(feedObj.getString("long"))));
 
                 //Log.d("timestamp", "" + time);
 
                 feedItems.add(0, item);
 
+
             }
+            Collections.sort(feedItems, new MyCustomComparator());
 
             listAdapter.notifyDataSetChanged();
             rootView.findViewById(R.id.pbHeaderProgress).setVisibility(View.GONE);
@@ -348,6 +353,21 @@ public class Nearby extends Fragment implements AdapterView.OnItemClickListener 
         return add;
     }
 
+
+    public static class MyCustomComparator implements Comparator<FeedItem> {
+
+        @Override
+        public int compare(FeedItem lhs,
+                           FeedItem rhs) {
+            if(Integer.parseInt(lhs.getDistance().replaceAll("[^0-9?!\\.]", ""))<Integer.parseInt(rhs.getDistance().replaceAll("[^0-9?!\\.]", "")))
+                 return -1;
+            else if(Integer.parseInt(lhs.getDistance().replaceAll("[^0-9?!\\.]",""))>Integer.parseInt(rhs.getDistance().replaceAll("[^0-9?!\\.]","")))
+                return 1;
+            else
+            return 0;
+        }
+
+    }
 
     public static Nearby newInstance(int someInt, String s) {
 

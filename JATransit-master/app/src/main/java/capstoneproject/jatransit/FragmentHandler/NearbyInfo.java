@@ -6,10 +6,12 @@ import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,28 +20,61 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import capstoneproject.jatransit.R;
+import capstoneproject.jatransit.nearbyhandler.TrackedBus;
 
 /**
  * Created by Caliph Cole on 05/08/2015.
  */
-public class NearbyInfo extends Fragment {
+public class NearbyInfo extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    private View rootView;
+    private static View rootView;
     private MapView mapView;
     private TextView distanceview, timestampview,routeview,originview,destinationview,locationview;
+    LocationManager locationManager;
+    private MapFragment mapFragment;
+    final String TAG = "JaTransit";
+    final String mapType = "JA";
+    protected LatLng currentLocation;
+    MarkerOptions mOption;
+    Random rand = new Random();
+    Timer timer;
+
+    String origin;
+
+    String destine;
+    String route ;
+    String location ;
+    String distance;
+    String time ;
 
 
-    String [] tempCoordinates = {"18.012061/-76.797698","18.011872/-76.797670","18.011908/-76.797488","18.011949/-76.797274","18.012005/-76.796909","18.020959/-76.770758","18.020296/-76.768194","18.019689/-76.765603","18.019413/-76.764063","18.019066/-76.762303","18.018602/-76.759997","18.017878/-76.756365","18.017495/-76.754225","18.017046/-76.751666","18.016663/-76.749906","18.016230/-76.747487","18.016097/-76.746618","18.015919/-76.745695","18.015633/-76.744118","18.015409/-76.743045","18.015743/-76.742391","18.016031/-76.741809","17.994998/-76.788781","18.015682/-76.741744","18.015307/-76.741916","18.015253/-76.742117"};
+    private ArrayList<ArrayList> routeList = new ArrayList<>();
+    private ArrayList<TrackedBus> buses = new ArrayList<>();
+
 
 
     public static final String ARG_STRING = "NearbyInfo";
@@ -47,19 +82,36 @@ public class NearbyInfo extends Fragment {
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         setHasOptionsMenu(true);
-        rootView = inflater.inflate(R.layout.nearbyinfo, container,false);
-        mapView = (MapView) rootView.findViewById(R.id.mapview);
-
-        mapView.onCreate(savedInstanceState);
-        mMap = mapView.getMap();
-
-        mMap.setMyLocationEnabled(true);
 
 
-        Polyline line = mMap.addPolyline(new PolylineOptions()
-                .add(new LatLng(51.5, -0.1), new LatLng(40.7, -74.0))
-                .width(5)
-                .color(Color.RED));
+        if (rootView != null) {
+            ViewGroup parent = (ViewGroup) rootView.getParent();
+            if (parent != null)
+                parent.removeView(rootView);
+        }
+        try {
+
+            rootView = inflater.inflate(R.layout.nearbyinfo, container, false);
+
+
+        }catch (InflateException e) {
+    /* map is already there, just return view as it is */
+        }
+
+
+        getActivity().findViewById(R.id.help).setVisibility(View.GONE);
+        locationManager = (LocationManager)
+                getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        mapFragment = (MapFragment) getActivity().getFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        LocationListener locationListener = new AppLocationListener();
+        locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
+
+
 
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -74,10 +126,10 @@ public class NearbyInfo extends Fragment {
             startActivity(intent);
         }
         // Define a listener that responds to location updates
-        LocationListener locationListener = new LocationListener() {
+         locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-               makeUseOfNewLocation(location);
+              // makeUseOfNewLocation(location);
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -93,13 +145,13 @@ public class NearbyInfo extends Fragment {
         //Retrieving data from nearby route
         Bundle bundle = getArguments();
 
-        String origin = bundle.getString("origin");
-        Log.d("Tag", "this is: " + origin);
-        String destine = bundle.getString("destination");
-        String route = bundle.getString("route");
-        String location = bundle.getString("location");
-        String distance = bundle.getString("distance");
-        String time = bundle.getString("time");
+        origin = bundle.getString("origin");
+
+        destine = bundle.getString("destination");
+        route = bundle.getString("route");
+        location = bundle.getString("location");
+        distance = bundle.getString("distance");
+        time = bundle.getString("time");
 
         busDetails(origin,destine, route, location,distance,time);
 
@@ -138,7 +190,7 @@ public class NearbyInfo extends Fragment {
     }
 
 
-    private void makeUseOfNewLocation(Location location) {
+   /* private void makeUseOfNewLocation(Location location) {
        /* try {
 
             Toast.makeText(getActivity(), location.getLatitude() + " " + location.getLongitude(), Toast.LENGTH_SHORT).show();
@@ -174,32 +226,14 @@ public class NearbyInfo extends Fragment {
             MapsInitializer.initialize(this.getActivity());
         } catch (Exception error) {
             error.printStackTrace();
-        }*/
+        }
 
         // Updates the location and zoom of the MapView
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15);
-        mMap.animateCamera(cameraUpdate);
-    }
+        //CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 15);
+       // mMap.animateCamera(cameraUpdate);
+    }*/
 
 
-
-    @Override
-    public void onResume() {
-        mapView.onResume();
-        super.onResume();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -235,95 +269,65 @@ public class NearbyInfo extends Fragment {
     }
 
 
-    /**
-     *
-     *Experiment
-     */
-/*
-
-    public void displayClosestBus()
-    {
-        TrackedBus bus = findNearestBus();
-
-        if(bus != null)
-        {
-
-            bus.getMarker().setTitle("Closest Bus!!");
-            bus.getMarker().showInfoWindow();
-            //displayToast("Closest bus found and displayed on map!");
-        }
-    }
-
-    public TrackedBus findNearestBus()
-    {
-        TrackedBus closest = null;
-        double shortestDistance = 999999999;
-        double distance = 0;
-
-        if(getCurrentLocation() == null)
-        {
-            String locationProvider = LocationManager.NETWORK_PROVIDER; // Or use LocationManager.GPS_PROVIDER
-            Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
-            setCurrentLocation(lastKnownLocation);
-
-            if(getCurrentLocation() == null)
-            {
-                displayToast("Please enable GPS!!");
-                return null;
-            }
-        }
-
-
-        for(TrackedBus bus: buses)
-        {
-            distance = calculateDistanceInMeters(getCurrentLocation(),bus.getLocation());
-
-            if( distance < shortestDistance )
-            {
-                closest = bus;
-                shortestDistance = distance;
-            }
-        }
-
-        return  closest;
-    }
-    public LatLng getCurrentLocation() {
-        return currentLocation;
-    }
-
-    public void setCurrentLocation(Location currentLocation)
-    {
-        this.currentLocation = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
+    @Override
+    public void onMapReady(GoogleMap map) {
+        setupMap(map);
     }
 
 
-
-    public void simulateTracking()
+    public void simulateTracking(JSONArray livebuses)
     {
-
-        for(TrackedBus bus: buses)
+        try
         {
-            int locationIndex = bus.getCurrentLocationIndex();
-            locationIndex++;
-            int routeIndex = bus.getRouteIndex();
+            for (int i = 0; i < livebuses.length(); i++) {
+                JSONObject jo = (JSONObject) livebuses.get(i);
 
-            if(locationIndex < routeList.get(routeIndex).size())
-            {
-                LatLng loc = (LatLng)routeList.get(routeIndex).get(locationIndex);
-                bus.updateLocation(locationIndex, loc, interval);
-                bus.getMarker().setPosition(loc);
-                bus.getMarker().setTitle("Speed: " + df.format(bus.getVelocity()) + "km/h");
+                String lat = jo.getString("lat");
+                String lon = jo.getString("long");
+                String origin = jo.getString("origin");
+                String via = jo.getString("via");
+                String destination = jo.getString("destination");
+                String velocity = jo.getString("velocity");
+                String bus_id = jo.getString("bus_id");
+                String route_id = jo.getString("route_id");
+                String direction = jo.getString("direction");
 
+                LatLng location = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
+
+                boolean found = false;
+                for(TrackedBus bus: buses)
+                {
+                    if(bus.getBusId().equals(bus_id))
+                    {
+                        String s [] = route.split(": ");
+                        if(route_id.equals(s[1])) {
+
+                            found = true;
+                            bus.setVelocity(Double.parseDouble(velocity));
+                            bus.getMarker().setTitle("Route#: " + route_id);
+                            bus.setCurrentLocation(location);
+                            bus.getMarker().setPosition(location);
+                        }
+                    }
+                }
+
+                if(!found)
+                {
+                    String s [] = route.split(": ");
+                    if(route_id.equals(s[1])) {
+                        Marker m = mapFragment.getMap().addMarker(mOption.position(location).icon(BitmapDescriptorFactory.fromResource(R.drawable.bus_marker)).anchor((float) 0.5, (float) 0.5));
+                        TrackedBus b = new TrackedBus(bus_id, m, 0, location);
+                        b.setVelocity(Double.parseDouble(velocity));
+                        b.getMarker().setTitle("Route#: " + route_id);
+                        buses.add(b);
+                    }
+                }
             }
-            else
-            {
-                LatLng loc = (LatLng)routeList.get(routeIndex).get(0);
-                bus.updateLocation(0, loc, interval);
-                bus.getMarker().setPosition(loc);
-            }
-
         }
-
+        catch (Exception e)
+        {
+            Log.d(TAG, "onPostExecute Error: " + e.toString());
+        }
     }
 
     public void clearMap()
@@ -351,36 +355,30 @@ public class NearbyInfo extends Fragment {
             }
             catch(Exception e)
             {
-                Log.d("TAG", "drawRoute Error: " + e.toString());
+                Log.d(TAG, "drawRoute Error: " + e.toString());
             }
         }
         int color = Color.argb(255, rand.nextInt(256) + 128, rand.nextInt(256) + 128, rand.nextInt(256) + 128);
 
-        LatLng location = route.get(0);
-
-        int routeIndex = routeList.size();
-
-        Marker m = mapFragment.getMap().addMarker( mOption.position(location).icon(BitmapDescriptorFactory.fromResource(R.drawable.bus_marker)).anchor((float)0.5,(float)0.5));
-        TrackedBus b = new TrackedBus(m,routeIndex,0,location);
-        buses.add(b);
-
         pO.width(5).color(color);
         mapFragment.getMap().addPolyline(pO);
-
         routeList.add(route);
 
     }
+
     public void setupMap(GoogleMap map)
     {
-        LatLng homeLoc = new LatLng(42.350, -71.146);
+        //LatLng homeLoc = new LatLng(42.350, -71.146);
         LatLng jamhome = new LatLng(18.012,-76.797);
 
         map.setMyLocationEnabled(true);
 
         /*mOption = new MarkerOptions()
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.bus_marker));
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.bus_marker));*/
         mOption = new MarkerOptions();
         map.getUiSettings().setZoomControlsEnabled(true);
+
+        clearMap();
 
         timer = new Timer();
 
@@ -388,24 +386,77 @@ public class NearbyInfo extends Fragment {
         {
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(jamhome, 13));
             new JaTransitFeedData().execute("http://server.jatransit.appspot.com/coordinates2");
-        }
-        else
-        {
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(homeLoc, 10));
 
             timer.scheduleAtFixedRate( new TimerTask() {
                 public void run() {
                     try
                     {
-                        new MBTAFeedData().execute("http://developer.mbta.com/lib/GTRTFS/Alerts/VehiclePositions.pb");
+                        //new JATransitLiveFeed().execute("http://developer.mbta.com/lib/GTRTFS/Alerts/VehiclePositions.pb");
+                        new JATransitLiveFeed().execute("http://jatransit.appspot.com/live");
                     }
                     catch (Exception e)
                     {
-                        Log.d("TAG", "MBTAFeedData scheduleAtFixedRate Error: " + e.toString());
+                        Log.d(TAG, "JATransitLiveFeed scheduleAtFixedRate Error: " + e.toString());
                     }
                 }
             }, 0, 20000);
         }
+    }
+
+
+    public void displayClosestBus()
+    {
+        TrackedBus bus = findNearestBus();
+
+        if(bus != null)
+        {
+
+            bus.getMarker().setTitle("Closest Bus!!");
+            bus.getMarker().showInfoWindow();
+
+        }
+    }
+    public TrackedBus findNearestBus()
+    {
+        TrackedBus closest = null;
+        double shortestDistance = 999999999;
+        double distance = 0;
+
+        if(getCurrentLocation() == null)
+        {
+            String locationProvider = LocationManager.NETWORK_PROVIDER; // Or use LocationManager.GPS_PROVIDER
+            Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+            setCurrentLocation(lastKnownLocation);
+
+            if(getCurrentLocation() == null)
+            {
+
+                return null;
+            }
+        }
+
+
+        for(TrackedBus bus: buses)
+        {
+            distance = calculateDistanceInMeters(getCurrentLocation(),bus.getLocation());
+
+            if( distance < shortestDistance )
+            {
+                closest = bus;
+                shortestDistance = distance;
+            }
+        }
+
+        return  closest;
+    }
+
+    public LatLng getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(Location currentLocation)
+    {
+        this.currentLocation = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
     }
 
 
@@ -435,7 +486,7 @@ public class NearbyInfo extends Fragment {
         }
 
         /** The system calls this to perform work in the UI thread and delivers
-         * the result from doInBackground()
+         * the result from doInBackground() */
         protected void onPostExecute(JSONArray routes) {
 
             try
@@ -449,13 +500,16 @@ public class NearbyInfo extends Fragment {
                     String[] coordinateList = jo.getString("coordinates").split(",");
 
                     for (String coordinate : coordinateList) {
-
-                        String[] coordinateArray = coordinate.split("/");
-                        Log.d(TAG, "Lat: " + coordinateArray[0] + " Lon: " + coordinateArray[1]);
-                        coordinates.add(new LatLng(Double.parseDouble(coordinateArray[0]), Double.parseDouble(coordinateArray[1])));
+                        Log.d("Testing routnum",route +" "+ routeNum);
+                        String s [] = route.split(": ");
+                        if(routeNum.equals(s[1])) {
+                            String[] coordinateArray = coordinate.split("/");
+                            Log.d(TAG, "Lat: " + coordinateArray[0] + " Lon: " + coordinateArray[1]);
+                            coordinates.add(new LatLng(Double.parseDouble(coordinateArray[0]), Double.parseDouble(coordinateArray[1])));
+                        }
                     }
 
-                    drawRoute(coordinates);
+                        drawRoute(coordinates);
                 }
             }
             catch (Exception e)
@@ -463,35 +517,16 @@ public class NearbyInfo extends Fragment {
                 Log.d(TAG, "onPostExecute Error: " + e.toString());
             }
 
-            setUpMapUpdater();
-
         }
     }
 
-
-    private void setUpMapUpdater() {
-        updater = new ScheduledThreadPoolExecutor(1);
-        updater.scheduleAtFixedRate(new Runnable() {
-            private Runnable update = new Runnable() {
-                @Override
-                public void run() {
-                    simulateTracking();
-                }
-            };
-
-            @Override
-            public void run() {
-                runOnUiThread(update);
-            }
-        }, 10, 10, TimeUnit.SECONDS);
-    }
 
     private class AppLocationListener implements LocationListener {
 
         @Override
         public void onLocationChanged(Location loc) {
 
-            displayToast("Lat: " + loc.getLatitude() + " Log: " + loc.getLongitude() );
+
             setCurrentLocation(loc);
         }
 
@@ -505,50 +540,37 @@ public class NearbyInfo extends Fragment {
         public void onStatusChanged(String provider, int status, Bundle extras) {}
     }
 
-    protected class MBTAFeedData extends AsyncTask<String, Void, ArrayList<LatLng>> {
+    protected class JATransitLiveFeed extends AsyncTask<String, Void, JSONArray> {
 
-        protected ArrayList<LatLng> doInBackground(String... urls) {
+        protected JSONArray doInBackground(String... urls) {
             URL url;
-            GtfsRealtime.FeedMessage feed;
-
-            ArrayList<LatLng>  buses = new ArrayList<>();
+            JSONArray buses = new JSONArray();
             try
             {
                 url = new URL(urls[0]);
-                feed = GtfsRealtime.FeedMessage.parseFrom(url.openStream());
-                int i = 0;
-                for (GtfsRealtime.FeedEntity entity : feed.getEntityList()) {
-                    //Log.d(TAG, "Loop");
-                    if (entity.hasVehicle()) {
-                        buses.add(new LatLng(entity.getVehicle().getPosition().getLatitude(),entity.getVehicle().getPosition().getLongitude()));
-                    }
+
+                BufferedReader bufferedReader =
+                        new BufferedReader(new InputStreamReader(
+                                url.openStream()));
+                String next;
+                while ((next = bufferedReader.readLine()) != null){
+                    JSONObject ja = new JSONObject(next);
+
+                    buses = ja.getJSONArray("trackedBus");
                 }
             }
             catch (Exception e) {
-                Log.d(TAG, "Error: " + e.toString());
+                Log.d(TAG, "doInBackground Error: " + e.toString());
             }
-
             return buses;
         }
 
+
         /** The system calls this to perform work in the UI thread and delivers
-         * the result from doInBackground()
-        protected void onPostExecute(ArrayList<LatLng> locations) {
+         * the result from doInBackground() */
+        protected void onPostExecute(JSONArray buses) {
 
-            clearMap();
-            for(LatLng loc: locations)
-            {
-                try
-                {
-                    mapFragment.getMap().addMarker(mOption.position(loc));
-                }
-                catch(Exception e)
-                {
-                    Log.d(TAG, "Error: " + e.toString());
-                }
-            }
-
-
+            simulateTracking(buses);
         }
     }
 
@@ -564,12 +586,10 @@ public class NearbyInfo extends Fragment {
 
         return  6371000.0 * Math.sqrt( x*x + y*y );
 
-    }*/
+    }
 
 
-    /*
 
-     */
 
     public static NearbyInfo newInstance(int someInt, String s) {
 

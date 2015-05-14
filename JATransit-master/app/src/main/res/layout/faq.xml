@@ -19,6 +19,13 @@
         android:paddingBottom="@dimen/feed_item_padding_top_bottom"
         android:paddingTop="@dimen/feed_item_padding_top_bottom"
         >
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -31,6 +38,9 @@
                 android:gravity="center"
                 android:layout_marginBottom="50dp"/>
             </LinearLayout>
+
+
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -93,7 +103,68 @@
         android:layout_marginBottom="30dp"
 
             />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/question4"
+            android:layout_marginBottom="5dp"
+            android:textColor="#000"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="40dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/answer4"
+            android:layout_marginBottom="30dp"
 
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/question5"
+            android:layout_marginBottom="5dp"
+            android:textColor="#000"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="40dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/answer5"
+            android:layout_marginBottom="30dp"
+
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:id="@+id/question6"
+            android:layout_marginBottom="5dp"
+            android:textColor="#000"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="40dp"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/answer6"
+            android:layout_marginBottom="30dp"
+
+            />
+          </LinearLayout>
+        </ScrollView>
 
     </LinearLayout>
 </LinearLayout>
