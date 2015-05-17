@@ -442,19 +442,30 @@ public class DBHelper extends SQLiteOpenHelper {
                     }catch (Exception e){
                         e.printStackTrace();
                     }
-                    // Adding contact to list
-                    //routeList.add(item);
 
-                    if (!cursorSecond2.moveToNext()) {
-                        cursorSecond2.moveToFirst();
-                        end = cursorSecond1.moveToNext();
-
-                    }
 
                     try {
+
                         if (cursorSecond1.getString(3).equals(cursorSecond2.getString(3))) {
+                            //Log.d("testing", cursorSecond1.getString(2) + " " + cursorSecond1.getString(3) + " " + cursorSecond2.getString(3));
+                            item.setOrigin("Origin: " + cursorSecond1.getString(2));
+                            item1.setOrigin("Origin: " + cursorSecond2.getString(2));
+                            // Log.d("origin",""+cursor.getString(2));
+                            item.setDestination("Destination: " + cursorSecond1.getString(3));
+                            item1.setDestination("Destination: " + cursorSecond2.getString(3));
+                            //Log.d("des",""+cursor.getString(3));
+                            item.setRoute("Route Number: " + cursorSecond1.getString(1));
+                            item1.setRoute("Route Number: " + cursorSecond2.getString(1));
+                            //Log.d("route",""+cursor.getString(1));
+                            item.setVia("Via: " + cursorSecond1.getString(4));
+                            item1.setVia("Via: " + cursorSecond2.getString(4));
+                            // Log.d("via",""+cursor.getString(4));
+                            item.setRouteType("Route Type: " + cursorSecond1.getString(5));
+                            item1.setRouteType("Route Type: " + cursorSecond2.getString(5));
+
                             routeList.add(0, item);
                             routeList.add(0, item1);
+                            Log.d("testing 2", routeList.get(1).getRoute());
 
                             end = false;
                         }
@@ -462,7 +473,17 @@ public class DBHelper extends SQLiteOpenHelper {
                         e.printStackTrace();
                     }
 
+                    if (!cursorSecond2.moveToNext()) {
+                        cursorSecond2.moveToFirst();
+                        end = cursorSecond1.moveToNext();
+
+                    }
+
+
+
                 } while (end);
+                cursorSecond1.close();
+                cursorSecond2.close();
                 return routeList;
             }
 
@@ -497,8 +518,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     }catch (Exception e){
                         e.printStackTrace();
                     }
-                    // Adding contact to list
-                    //routeList.add(item);
+
 
                     if (!cursorThird1.moveToNext()) {
                         cursorSecond2.moveToFirst();
@@ -689,7 +709,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
         }else if(cursorFourth.getCount()>0 && cursorSecond2.getCount()>0){// via and des=origin
 
-        }else if(cursorFifth.getCount()>0 && cursorThird2.getCount()>0){//via and origin=des
+        }else if(cursorFifth.getCount()>0 && cursorThird2.getCount()>0) {//via and origin=des
 
         }
       else{

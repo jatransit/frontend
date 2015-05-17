@@ -84,4 +84,12 @@ public class Help extends Fragment {
         search.setText(icon[4]);
         detail5.setText(details[3]);
     }
+
+    public static Help newInstance(int someInt, String s) {
+        Help hfragment = new Help();
+        Bundle args = new Bundle();
+        args.putInt(s, someInt);
+        hfragment.setArguments(args);
+        return hfragment;
+    }
 }

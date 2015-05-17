@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -49,6 +50,10 @@ public class TripPlannerQueryFragment extends Fragment {
         faActivity  = (FragmentActivity)    super.getActivity();
         rootView = inflater.inflate(R.layout.listview, container,false);
         listView = (ListView) rootView.findViewById(R.id.listView);
+
+        getActivity().getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN
+        );
 
         notfound = (TextView) rootView.findViewById(R.id.message);
         Bundle bundle = getArguments();
